@@ -17,34 +17,29 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 $util = Util::getInstance();
 
-// Definir la URL base para los archivos (CAMBIAR SI SE USA EN PRODUCCIÓN)
 $baseUrl = "http://localhost:8080/public/facturas/";
 
-// Leer el JSON de la solicitud POST
 $json = file_get_contents("php://input");
 $data = json_decode($json, true);
 
-// Validar que el JSON es correcto
 if (!$data) {
+    http_response_code(400);
     echo json_encode(["success" => false, "message" => "JSON inválido"]);
     exit();
 }
 
-// Crear la factura con los datos recibidos
-
 $clientData = $data['cliente'] ?? [];
 
 $client = new Client();
-$client->setTipoDoc($clientData['tipoDoc'] ?? '6') // RUC por defecto
+$client->setTipoDoc($clientData['tipoDoc'] ?? '6')
     ->setNumDoc($clientData['numDoc'] ?? '20000000001')
     ->setRznSocial($clientData['nombre'] ?? 'Cliente Genérico')
-    ->setAddress((new Address())
-        ->setDireccion($clientData['direccion'] ?? 'Dirección no especificada'))
+    ->setAddress((new Address())->setDireccion($clientData['direccion'] ?? 'Dirección no especificada'))
     ->setEmail($clientData['email'] ?? 'sincorreo@correo.com')
     ->setTelephone($clientData['telefono'] ?? '000-000000');
+
 $invoice = new Invoice();
-$invoice
-    ->setUblVersion('2.1')
+$invoice->setUblVersion('2.1')
     ->setFecVencimiento(new DateTime())
     ->setTipoOperacion('0101')
     ->setTipoDoc('01')
@@ -63,7 +58,6 @@ $invoice
     ->setSubTotal($data['subTotal'] ?? 336)
     ->setMtoImpVenta($data['total'] ?? 336);
 
-// Agregar los ítems de la factura
 $items = [];
 foreach ($data['items'] as $item) {
     $detalle = (new SaleDetail())
@@ -82,25 +76,23 @@ foreach ($data['items'] as $item) {
 
     $items[] = $detalle;
 }
+
 $invoice->setDetails($items)
     ->setLegends([
         (new Legend())->setCode('1000')->setValue($data['leyenda'] ?? 'Monto en letras')
     ]);
 
-// Enviar a SUNAT
 $see = $util->getSee(SunatEndpoints::FE_BETA);
 $res = $see->send($invoice);
 
-// Definir rutas de almacenamiento (en carpeta pública)
 $xmlFilename = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.xml";
 $pdfFilename = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.pdf";
-$cdrFilename = "R-{$invoice->getSerie()}-{$invoice->getCorrelativo()}.zip"; // SUNAT agrega "R-" al nombre del CDR
+$cdrFilename = "R-{$invoice->getSerie()}-{$invoice->getCorrelativo()}.zip";
 
 $xmlPath = __DIR__ . "/../../public/facturas/xml/" . $xmlFilename;
 $pdfPath = __DIR__ . "/../../public/facturas/pdf/" . $pdfFilename;
 $cdrPath = __DIR__ . "/../../public/facturas/cdr/" . $cdrFilename;
 
-// Crear directorios si no existen
 if (!is_dir(dirname($xmlPath))) {
     mkdir(dirname($xmlPath), 0777, true);
 }
@@ -111,11 +103,10 @@ if (!is_dir(dirname($cdrPath))) {
     mkdir(dirname($cdrPath), 0777, true);
 }
 
-// Guardar el XML en el servidor
 file_put_contents($xmlPath, $see->getFactory()->getLastXml());
 
-// Si la factura no fue aceptada, devolver error
 if (!$res->isSuccess()) {
+    http_response_code(500);
     echo json_encode([
         "success" => false,
         "message" => "Error al enviar la factura",
@@ -124,15 +115,14 @@ if (!$res->isSuccess()) {
     exit();
 }
 
-/**@var $res BillResult*/
 $cdr = $res->getCdrResponse();
-file_put_contents($cdrPath, $res->getCdrZip()); // Guardar el CDR.zip
+file_put_contents($cdrPath, $res->getCdrZip());
 
-// Generar el PDF de la factura
 try {
     $pdf = $util->getPdf($invoice);
     file_put_contents($pdfPath, $pdf);
 } catch (Exception $e) {
+    http_response_code(500);
     echo json_encode([
         "success" => false,
         "message" => "Error al generar el PDF",
@@ -141,12 +131,10 @@ try {
     exit();
 }
 
-// Construir las URLs accesibles
 $xmlUrl = $baseUrl . "xml/" . $xmlFilename;
 $pdfUrl = $baseUrl . "pdf/" . $pdfFilename;
-$cdrUrl = $baseUrl . "cdr/" . $cdrFilename; // URL del CDR.zip
-
-// Respuesta en JSON con las URLs de los archivos generados
+$cdrUrl = $baseUrl . "cdr/" . $cdrFilename;
+http_response_code(200); // Código 200: OK
 $response = [
     "success" => true,
     "message" => "Factura procesada con éxito",
@@ -156,7 +144,7 @@ $response = [
     "notas" => $cdr->getNotes(),
     "xml_url" => $xmlUrl,
     "pdf_url" => $pdfUrl,
-    "cdr_url" => $cdrUrl // Devolver la URL del CDR
+    "cdr_url" => $cdrUrl
 ];
 
 echo json_encode($response, JSON_PRETTY_PRINT);

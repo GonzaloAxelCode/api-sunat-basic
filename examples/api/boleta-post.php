@@ -22,6 +22,7 @@ $json = file_get_contents("php://input");
 $data = json_decode($json, true);
 
 if (!$data) {
+    http_response_code(400); // Código 400: Bad Request
     echo json_encode(["success" => false, "message" => "JSON inválido"]);
     exit();
 }
@@ -80,6 +81,20 @@ $invoice->setDetails($items)
 $see = $util->getSee(SunatEndpoints::FE_BETA);
 $res = $see->send($invoice);
 
+// Si la boleta no fue aceptada, devolver error
+if (!$res->isSuccess()) {
+    http_response_code(500); // Código 500: Error interno del servidor
+    echo json_encode([
+        "success" => false,
+        "message" => "Error al enviar la boleta",
+        "error" => $util->getErrorResponse($res->getError())
+    ]);
+    exit();
+}
+
+/**@var $res \Greenter\Model\Response\BillResult */
+$cdr = $res->getCdrResponse();
+
 // Definir rutas de almacenamiento
 $xmlFilename = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.xml";
 $pdfFilename = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.pdf";
@@ -93,34 +108,14 @@ $cdrPath = __DIR__ . "/../../public/boletas/cdr/" . $cdrFilename;
 $ticketPath = __DIR__ . "/../../public/boletas/pdf/" . $ticketFilename;
 
 // Crear directorios si no existen
-if (!is_dir(dirname($xmlPath))) {
-    mkdir(dirname($xmlPath), 0777, true);
-}
-if (!is_dir(dirname($pdfPath))) {
-    mkdir(dirname($pdfPath), 0777, true);
-}
-if (!is_dir(dirname($cdrPath))) {
-    mkdir(dirname($cdrPath), 0777, true);
-}
-if (!is_dir(dirname($ticketPath))) {
-    mkdir(dirname($ticketPath), 0777, true);
+foreach ([$xmlPath, $pdfPath, $cdrPath, $ticketPath] as $path) {
+    if (!is_dir(dirname($path))) {
+        mkdir(dirname($path), 0777, true);
+    }
 }
 
 // Guardar el XML en el servidor
 file_put_contents($xmlPath, $see->getFactory()->getLastXml());
-
-// Si la boleta no fue aceptada, devolver error
-if (!$res->isSuccess()) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Error al enviar la boleta",
-        "error" => $util->getErrorResponse($res->getError())
-    ]);
-    exit();
-}
-
-/**@var $res \Greenter\Model\Response\BillResult */
-$cdr = $res->getCdrResponse();
 file_put_contents($cdrPath, $res->getCdrZip()); // Guardar el CDR.zip
 
 // Generar el PDF normal de la boleta
@@ -128,6 +123,7 @@ try {
     $pdf = $util->getPdf($invoice);
     file_put_contents($pdfPath, $pdf);
 } catch (Exception $e) {
+    http_response_code(500);
     echo json_encode([
         "success" => false,
         "message" => "Error al generar el PDF",
@@ -141,6 +137,7 @@ try {
     $ticketPdf = $util->getPdf($invoice, 'ticket');
     file_put_contents($ticketPath, $ticketPdf);
 } catch (Exception $e) {
+    http_response_code(500);
     echo json_encode([
         "success" => false,
         "message" => "Error al generar el ticket",
@@ -156,7 +153,8 @@ $cdrUrl = $baseUrl . "cdr/" . $cdrFilename;
 $ticketUrl = $baseUrl . "pdf/" . $ticketFilename;
 
 // Responder con los datos generados
-$response = [
+http_response_code(200); // Código 200: OK
+echo json_encode([
     "success" => true,
     "message" => "Boleta procesada con éxito",
     "boleta_id" => $invoice->getSerie() . '-' . $invoice->getCorrelativo(),
@@ -167,6 +165,4 @@ $response = [
     "pdf_url" => $pdfUrl,
     "cdr_url" => $cdrUrl,
     "ticket_url" => $ticketUrl // URL del ticket
-];
-
-echo json_encode($response, JSON_PRETTY_PRINT);
+], JSON_PRETTY_PRINT);
