@@ -94,7 +94,7 @@ echo json_encode([
     "nota_id" => $note->getName(),
     "cdr_codigo" => $cdr->getCode(),
     "cdr_descripcion" => $cdr->getDescription(),
-    "xml_url" => "http://localhost:8080/public/notas/xml/" . $note->getName() . ".xml",
-    "cdr_url" => "http://localhost:8080/public/notas/cdr/R-" . $note->getName() . ".zip",
-    "pdf_url" => "http://localhost:8080/public/notas/pdf/" . $note->getName() . ".pdf"
+    "xml_url" => "https://api-sunat-basic.onrender.com/public/notas/xml/" . $note->getName() . ".xml",
+    "cdr_url" => "https://api-sunat-basic.onrender.com/public/notas/cdr/R-" . $note->getName() . ".zip",
+    "pdf_url" => "https://api-sunat-basic.onrender.com/public/notas/pdf/" . $note->getName() . ".pdf"
 ]);

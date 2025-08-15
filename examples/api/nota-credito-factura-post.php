@@ -131,7 +131,7 @@ try {
 }
 
 // Construir las URLs accesibles
-$baseUrl = "http://localhost:8080/public/notas/";
+$baseUrl = "https://api-sunat-basic.onrender.com/public/notas/";
 $xmlUrl = $baseUrl . "xml/" . $xmlFilename;
 $cdrUrl = $baseUrl . "cdr/" . $cdrFilename;
 $pdfUrl = $baseUrl . "pdf/" . $pdfFilename;

@@ -15,7 +15,7 @@ require __DIR__ . '/../../vendor/autoload.php';
 $util = Util::getInstance();
 
 // URL base para los archivos generados (CAMBIAR EN PRODUCCIÓN)
-$baseUrl = "http://localhost:8080/public/boletas/";
+$baseUrl = "https://api-sunat-basic.onrender.com/public/boletas/";
 
 // Leer el JSON de la solicitud POST
 $json = file_get_contents("php://input");
