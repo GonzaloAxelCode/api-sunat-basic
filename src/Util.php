@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\MyTemplateResolver;
 use Greenter\Data\DocumentGeneratorInterface;
 use Greenter\Data\GeneratorFactory;
 use Greenter\Data\SharedStore;
@@ -138,7 +139,7 @@ HTML;
             'cache' => __DIR__ . '/../cache',
             'strict_variables' => true,
         ]);
-        $resolver = new DefaultTemplateResolver();
+        $resolver = new MyTemplateResolver();
         $template = $resolver->getTemplate($document);
         $html->setTemplate($template);
 
