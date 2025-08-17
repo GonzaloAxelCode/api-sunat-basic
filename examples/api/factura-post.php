@@ -119,7 +119,7 @@ $cdr = $res->getCdrResponse();
 file_put_contents($cdrPath, $res->getCdrZip());
 
 try {
-    $pdf = $util->getPdf($invoice);
+    $pdf = $util->getPdf($invoice, "default");
     file_put_contents($pdfPath, $pdf);
 } catch (Exception $e) {
     http_response_code(500);

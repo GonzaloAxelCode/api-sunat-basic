@@ -138,13 +138,13 @@ HTML;
         file_put_contents($fileDir . DIRECTORY_SEPARATOR . $filename, $content);
     }
 
-    public function getPdf(DocumentInterface $document): ?string
+    public function getPdf(DocumentInterface $document, string $ticketType): ?string
     {
         $html = new HtmlReport(__DIR__ . '/templates', [
             'cache' => __DIR__ . '/../cache',
             'strict_variables' => false,
         ]);
-        $resolver = new MyTemplateResolver();
+        $resolver = new MyTemplateResolver($ticketType);
         $template = $resolver->getTemplate($document);
         $html->setTemplate($template);
 
@@ -262,10 +262,26 @@ HTML;
 
 class MyTemplateResolver implements TemplateResolverInterface
 {
+    private string $format;
+
+    public function __construct(string $format)
+    {
+        $this->format = $format;
+    }
     public function getTemplate(DocumentInterface $document): string
     {
-        echo "Using custom template resolver for document: " . $document->getTipoDoc() . " con formato " . $document->format;
-        // Aquí apuntas a tu propia plantilla personalizada
-        return 'ticket.html.twig';
+
+
+        $tipoDoc = method_exists($document, 'getTipoDoc') ? $document->getTipoDoc() : 'N/A';
+        error_log($tipoDoc);
+        if ($tipoDoc !== '03') {
+
+            return $this->format === 'ticket' ? 'ticket.html.twig' : 'ticket_pdf.html.twig';
+        }
+        if ($tipoDoc === "01") {
+            return 'summary.html.twig';
+        }
+
+        return 'voided.html.twig';
     }
 }
