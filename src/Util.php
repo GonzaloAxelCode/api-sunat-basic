@@ -283,14 +283,11 @@ class MyTemplateResolver implements TemplateResolverInterface
 {
     public function getTemplate(DocumentInterface $document): string
     {
-        if ($document->getTipoDoc() === '03') { // Boleta
-            if (property_exists($document, 'format') && $document->format === 'ticket') {
-                return 'ticket.html.twig';     // Formato ticket
-            }
-            return 'ticket_pdf.html.twig';     // Formato A4
-        }
 
-        // fallback (facturas u otros)
-        return 'voided.html.twig';
+
+        return 'ticket_pdf.html.twig';     // Formato A4
+
+
+
     }
 }
