@@ -264,7 +264,8 @@ class MyTemplateResolver implements TemplateResolverInterface
 {
     public function getTemplate(DocumentInterface $document): string
     {
+        echo "Using custom template resolver for document: " . $document->getTipoDoc() . " con formato " . $document->format;
         // Aquí apuntas a tu propia plantilla personalizada
-        return 'ticket_pdf.html.twig';
+        return 'ticket.html.twig';
     }
 }
