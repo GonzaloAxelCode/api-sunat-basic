@@ -1,12 +1,17 @@
 <?php
 
+
 declare(strict_types=1);
 
-use App\MyTemplateResolver;
+
+use Greenter\Model\DocumentInterface;
+use Greenter\Report\Resolver\TemplateResolverInterface;
+
+
 use Greenter\Data\DocumentGeneratorInterface;
 use Greenter\Data\GeneratorFactory;
 use Greenter\Data\SharedStore;
-use Greenter\Model\DocumentInterface;
+
 use Greenter\Model\Response\CdrResponse;
 use Greenter\Model\Sale\SaleDetail;
 use Greenter\Report\HtmlReport;
@@ -135,9 +140,9 @@ HTML;
 
     public function getPdf(DocumentInterface $document): ?string
     {
-        $html = new HtmlReport('', [
+        $html = new HtmlReport(__DIR__ . '/templates', [
             'cache' => __DIR__ . '/../cache',
-            'strict_variables' => true,
+            'strict_variables' => false,
         ]);
         $resolver = new MyTemplateResolver();
         $template = $resolver->getTemplate($document);
@@ -161,17 +166,14 @@ HTML;
         $params['system']['hash'] = $hash;
         $params['user']['footer'] = '<div>consulte en <a href="https://github.com/giansalex/sufel">sufel.com</a></div>';
 
-        $pdf = $render->render($document, $params);
 
+        $pdf = $render->render($document, $params);
         if ($pdf === null) {
             $error = $render->getExporter()->getError();
             echo 'Error: ' . $error;
             exit();
         }
-
-        // Write html
         $this->writeFile($document->getName() . '.html', $render->getHtml());
-
         return $pdf;
     }
 
@@ -254,5 +256,15 @@ HTML;
                 ],
             ]
         ];
+    }
+}
+
+
+class MyTemplateResolver implements TemplateResolverInterface
+{
+    public function getTemplate(DocumentInterface $document): string
+    {
+        // Aquí apuntas a tu propia plantilla personalizada
+        return 'mi_boleta.html.twig';
     }
 }

@@ -44,7 +44,8 @@ $invoice
     ->setCorrelativo($data['correlativo'] ?? '123')
     ->setFechaEmision(new DateTime())
     ->setTipoMoneda($data['moneda'] ?? 'PEN')
-    ->setCompany($util->shared->getCompany())
+
+    ->setCompany($util->getGRECompany())
     ->setClient($client)
     ->setMtoOperGravadas($data['gravadas'] ?? 200)
     ->setMtoIGV($data['igv'] ?? 36)
