@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+
 
 use Greenter\Model\DocumentInterface;
 use Greenter\Report\Resolver\TemplateResolverInterface;
