@@ -274,7 +274,7 @@ class MyTemplateResolver implements TemplateResolverInterface
 
         $tipoDoc = method_exists($document, 'getTipoDoc') ? $document->getTipoDoc() : 'N/A';
         error_log($tipoDoc);
-        if ($tipoDoc !== '03') {
+        if ($tipoDoc === '03') {
 
             return $this->format === 'ticket' ? 'ticket.html.twig' : 'ticket_pdf.html.twig';
         }
