@@ -284,7 +284,7 @@ class MyTemplateResolver implements TemplateResolverInterface
     public function getTemplate(DocumentInterface $document): string
     {
         $tipoDoc = $document->getTipoDoc(); // 01 = Factura, 03 = Boleta, etc.
-        $format  = property_exists($document, 'format') ? $document->format : 'a4';
+        $format  = property_exists($document, 'ticket') ? $document->format : 'a4';
 
         // --- Boleta ---
         if ($tipoDoc === '03') {
@@ -296,12 +296,8 @@ class MyTemplateResolver implements TemplateResolverInterface
             }
         }
 
-        // --- Factura u otros ---
-        if ($tipoDoc === '01') {
-            return 'invoice.html.twig'; // tu plantilla de factura
-        }
 
         // --- Fallback por si no coincide nada ---
-        return 'invoice.html.twig';
+        return 'voided.html.twig';
     }
 }
