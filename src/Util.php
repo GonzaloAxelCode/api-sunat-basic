@@ -283,21 +283,14 @@ class MyTemplateResolver implements TemplateResolverInterface
 {
     public function getTemplate(DocumentInterface $document): string
     {
-        $tipoDoc = $document->getTipoDoc(); // 01 = Factura, 03 = Boleta, etc.
-        $format  = property_exists($document, 'ticket') ? $document->format : 'a4';
-
-        // --- Boleta ---
-        if ($tipoDoc === '03') {
-            if ($format === 'ticket') {
-                return 'ticket.html.twig';        // para impresora térmica
+        if ($document->getTipoDoc() === '03') { // Boleta
+            if (property_exists($document, 'format') && $document->format === 'ticket') {
+                return 'ticket.html.twig';     // Formato ticket
             }
-            if ($format === 'a4') {
-                return 'ticket_pdf.html.twig';    // para PDF A4 (correo)
-            }
+            return 'ticket_pdf.html.twig';     // Formato A4
         }
 
-
-        // --- Fallback por si no coincide nada ---
-        return 'voided.html.twig';
+        // fallback (facturas u otros)
+        return 'invoice.html.twig';
     }
 }
