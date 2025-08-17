@@ -46,6 +46,7 @@ $invoice
     ->setTipoMoneda($data['moneda'] ?? 'PEN')
 
     ->setCompany($util->getGRECompany())
+
     ->setClient($client)
     ->setMtoOperGravadas($data['gravadas'] ?? 200)
     ->setMtoIGV($data['igv'] ?? 36)
@@ -121,7 +122,7 @@ file_put_contents($cdrPath, $res->getCdrZip()); // Guardar el CDR.zip
 
 // Generar el PDF normal de la boleta
 try {
-    $pdf = $util->getPdf($invoice, 'a4');
+    $pdf = $util->getPdf($invoice);
     file_put_contents($pdfPath, $pdf);
 } catch (Exception $e) {
     http_response_code(500);

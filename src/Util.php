@@ -137,52 +137,35 @@ HTML;
 
         file_put_contents($fileDir . DIRECTORY_SEPARATOR . $filename, $content);
     }
-    public function getPdf(DocumentInterface $document, string $format = 'a4'): ?string
-    {
-        $document->format = $format; // guardamos dentro del objeto
 
+    public function getPdf(DocumentInterface $document): ?string
+    {
         $html = new HtmlReport(__DIR__ . '/templates', [
             'cache' => __DIR__ . '/../cache',
             'strict_variables' => false,
         ]);
-
         $resolver = new MyTemplateResolver();
         $template = $resolver->getTemplate($document);
         $html->setTemplate($template);
 
         $render = new PdfReport($html);
-
-        // Detectar formato
-        if ($format === 'ticket') {
-            $options = [
-                'no-outline',
-                'print-media-type',
-                'viewport-size' => '1280x1024',
-                'page-width' => '80mm',
-                'page-height' => 'auto',
-            ];
-        } else { // A4
-            $options = [
-                'no-outline',
-                'print-media-type',
-                'viewport-size' => '1280x1024',
-                'page-width' => '21cm',
-                'page-height' => '29.7cm',
-                'footer-html' => __DIR__ . '/../resources/footer.html',
-            ];
-        }
-
-        $render->setOptions($options);
-
+        $render->setOptions([
+            'no-outline',
+            'print-media-type',
+            'viewport-size' => '1280x1024',
+            'page-width' => '21cm',
+            'page-height' => '29.7cm',
+            'footer-html' => __DIR__ . '/../resources/footer.html',
+        ]);
         $binPath = self::getPathBin();
         if (file_exists($binPath)) {
             $render->setBinPath($binPath);
         }
-
         $hash = $this->getHash($document);
         $params = self::getParametersPdf();
         $params['system']['hash'] = $hash;
-        $params['user']['footer'] = '<div>Consulte en <a href="https://github.com/giansalex/sufel">sufel.com</a></div>';
+        $params['user']['footer'] = '<div>consulte en <a href="https://github.com/giansalex/sufel">sufel.com</a></div>';
+
 
         $pdf = $render->render($document, $params);
         if ($pdf === null) {
@@ -190,11 +173,9 @@ HTML;
             echo 'Error: ' . $error;
             exit();
         }
-
         $this->writeFile($document->getName() . '.html', $render->getHtml());
         return $pdf;
     }
-
 
     public function getGenerator(string $type): ?DocumentGeneratorInterface
     {
@@ -283,11 +264,7 @@ class MyTemplateResolver implements TemplateResolverInterface
 {
     public function getTemplate(DocumentInterface $document): string
     {
-
-
-        return 'ticket_pdf.html.twig';     // Formato A4
-
-
-
+        // Aquí apuntas a tu propia plantilla personalizada
+        return 'ticket_pdf.html.twig';
     }
 }
