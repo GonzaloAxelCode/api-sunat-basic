@@ -265,6 +265,6 @@ class MyTemplateResolver implements TemplateResolverInterface
     public function getTemplate(DocumentInterface $document): string
     {
         // Aquí apuntas a tu propia plantilla personalizada
-        return 'mi_boleta.html.twig';
+        return 'invoice.html.twig';
     }
 }

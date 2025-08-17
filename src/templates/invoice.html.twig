@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: monospace, Arial, sans-serif;
+            font-size: 11px;
+            width: 78mm;
+            margin: 0 auto;
+        }
+        .center { text-align: center; }
+        .right { text-align: right; }
+        .line { border-top: 1px dashed #000; margin: 4px 0; }
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 2px 0; vertical-align: top; }
+    </style>
+</head>
+<body>
+    {% set cp = doc.company %}
+    {% set cl = doc.client %}
+    {% set moneda = doc.tipoMoneda|catalog('02') %}
+    {% set name = doc.tipoDoc|catalog('01') %}
+
+    <!-- Encabezado -->
+    <div class="center">
+        <strong>{{ cp.razonSocial }}</strong><br>
+        RUC: {{ cp.ruc }}<br>
+        {{ cp.address.direccion }}<br>
+        -------------------------------<br>
+        <strong>{{ name }} ELECTRÓNICA</strong><br>
+        {{ doc.serie }}-{{ doc.correlativo }}<br>
+        -------------------------------<br>
+    </div>
+
+    <!-- Cliente -->
+    <div>
+        Cliente: {{ cl.rznSocial }}<br>
+        {{ cl.tipoDoc|catalog('06') }}: {{ cl.numDoc }}<br>
+        Fecha: {{ doc.fechaEmision|date('d/m/Y H:i') }}<br>
+    </div>
+    <div class="line"></div>
+
+    <!-- Detalles -->
+    <table>
+        <thead>
+            <tr>
+                <td>Cant</td>
+                <td>Descripción</td>
+                <td class="right">Total</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for det in doc.details %}
+            <tr>
+                <td>{{ det.cantidad|n_format }}</td>
+                <td>{{ det.descripcion }}</td>
+                <td class="right">{{ moneda }} {{ det.mtoValorVenta|n_format }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="line"></div>
+
+    <!-- Totales -->
+    <table>
+        <tr>
+            <td class="right">Op. Gravada:</td>
+            <td class="right">{{ moneda }} {{ doc.mtoOperGravadas|n_format }}</td>
+        </tr>
+        <tr>
+            <td class="right">IGV:</td>
+            <td class="right">{{ moneda }} {{ doc.mtoIGV|n_format }}</td>
+        </tr>
+        <tr>
+            <td class="right"><strong>Total:</strong></td>
+            <td class="right"><strong>{{ moneda }} {{ doc.mtoImpVenta|n_format }}</strong></td>
+        </tr>
+    </table>
+    <div class="line"></div>
+
+    <!-- Leyenda -->
+    <div>
+        {{ legend(doc.legends, '1000') }}
+    </div>
+
+    <!-- Footer -->
+    <div class="center">
+        {% if params.system.hash is defined and params.system.hash %}
+            Hash: {{ params.system.hash }}<br>
+        {% endif %}
+        <img src="{{ qrCode(doc)|image_b64('svg+xml') }}" width="120"><br>
+        -------------------------------<br>
+        ¡Gracias por su compra!<br>
+        Representación impresa de la {{ name }} ELECTRÓNICA.
+    </div>
+</body>
+</html>
