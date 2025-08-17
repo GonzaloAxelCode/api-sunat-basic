@@ -121,7 +121,7 @@ file_put_contents($cdrPath, $res->getCdrZip()); // Guardar el CDR.zip
 
 // Generar el PDF normal de la boleta
 try {
-    $pdf = $util->getPdf($invoice);
+    $pdf = $util->getPdf($invoice, 'a4');
     file_put_contents($pdfPath, $pdf);
 } catch (Exception $e) {
     http_response_code(500);
