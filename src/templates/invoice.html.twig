@@ -4,16 +4,28 @@
     <meta charset="UTF-8">
     <style>
         body {
-            font-family: monospace, Arial, sans-serif;
+            font-family: "Helvetica Neue", Arial, sans-serif;
             font-size: 11px;
             width: 78mm;
             margin: 0 auto;
+            color: #000;
         }
         .center { text-align: center; }
         .right { text-align: right; }
-        .line { border-top: 1px dashed #000; margin: 4px 0; }
+        .bold { font-weight: bold; }
+        .divider { 
+            border-top: 1px dashed #444; 
+            margin: 6px 0; 
+        }
+        .header { font-size: 13px; font-weight: bold; }
         table { width: 100%; border-collapse: collapse; }
         td { padding: 2px 0; vertical-align: top; }
+        .items td { border-bottom: 1px dotted #ccc; padding: 4px 0; }
+        .totals td { padding: 2px 0; font-size: 11px; }
+        .totals .label { text-align: right; width: 60%; }
+        .totals .value { text-align: right; width: 40%; }
+        .footer { margin-top: 8px; font-size: 10px; }
+        img.qr { margin-top: 6px; }
     </style>
 </head>
 <body>
@@ -22,29 +34,42 @@
     {% set moneda = doc.tipoMoneda|catalog('02') %}
     {% set name = doc.tipoDoc|catalog('01') %}
 
-    <!-- Encabezado -->
+    <!-- Encabezado Empresa -->
     <div class="center">
-        <strong>{{ cp.razonSocial }}</strong><br>
-        RUC: {{ cp.ruc }}<br>
-        {{ cp.address.direccion }}<br>
-        -------------------------------<br>
-        <strong>{{ name }} ELECTRÓNICA</strong><br>
-        {{ doc.serie }}-{{ doc.correlativo }}<br>
-        -------------------------------<br>
+        <div class="header">{{ cp.razonSocial }}</div>
+        <div>RUC: {{ cp.ruc }}</div>
+        <div>{{ cp.address.direccion }}</div>
+        {% if params.user.header is defined %}
+            <div>{{ params.user.header|raw }}</div>
+        {% endif %}
     </div>
+
+    <div class="divider"></div>
+
+    <!-- Datos Comprobante -->
+    <div class="center">
+        <div class="bold">{{ name }} ELECTRÓNICA</div>
+        <div>{{ doc.serie }} - {{ doc.correlativo }}</div>
+        <div>Fecha: {{ doc.fechaEmision|date('d/m/Y H:i') }}</div>
+    </div>
+
+    <div class="divider"></div>
 
     <!-- Cliente -->
     <div>
-        Cliente: {{ cl.rznSocial }}<br>
-        {{ cl.tipoDoc|catalog('06') }}: {{ cl.numDoc }}<br>
-        Fecha: {{ doc.fechaEmision|date('d/m/Y H:i') }}<br>
+        <div><span class="bold">Cliente:</span> {{ cl.rznSocial }}</div>
+        <div><span class="bold">{{ cl.tipoDoc|catalog('06') }}:</span> {{ cl.numDoc }}</div>
+        {% if cl.address %}
+            <div><span class="bold">Dirección:</span> {{ cl.address.direccion }}</div>
+        {% endif %}
     </div>
-    <div class="line"></div>
+
+    <div class="divider"></div>
 
     <!-- Detalles -->
-    <table>
+    <table class="items">
         <thead>
-            <tr>
+            <tr class="bold">
                 <td>Cant</td>
                 <td>Descripción</td>
                 <td class="right">Total</td>
@@ -60,39 +85,50 @@
             {% endfor %}
         </tbody>
     </table>
-    <div class="line"></div>
+
+    <div class="divider"></div>
 
     <!-- Totales -->
-    <table>
+    <table class="totals">
+        {% if doc.mtoOperGravadas %}
         <tr>
-            <td class="right">Op. Gravada:</td>
-            <td class="right">{{ moneda }} {{ doc.mtoOperGravadas|n_format }}</td>
+            <td class="label">Op. Gravadas:</td>
+            <td class="value">{{ moneda }} {{ doc.mtoOperGravadas|n_format }}</td>
         </tr>
+        {% endif %}
+        {% if doc.mtoOperExoneradas %}
         <tr>
-            <td class="right">IGV:</td>
-            <td class="right">{{ moneda }} {{ doc.mtoIGV|n_format }}</td>
+            <td class="label">Op. Exoneradas:</td>
+            <td class="value">{{ moneda }} {{ doc.mtoOperExoneradas|n_format }}</td>
         </tr>
+        {% endif %}
         <tr>
-            <td class="right"><strong>Total:</strong></td>
-            <td class="right"><strong>{{ moneda }} {{ doc.mtoImpVenta|n_format }}</strong></td>
+            <td class="label">IGV (18%):</td>
+            <td class="value">{{ moneda }} {{ doc.mtoIGV|n_format }}</td>
+        </tr>
+        <tr class="bold">
+            <td class="label">Total:</td>
+            <td class="value">{{ moneda }} {{ doc.mtoImpVenta|n_format }}</td>
         </tr>
     </table>
-    <div class="line"></div>
+
+    <div class="divider"></div>
 
     <!-- Leyenda -->
     <div>
-        {{ legend(doc.legends, '1000') }}
+        <span class="bold">Son:</span> {{ legend(doc.legends, '1000') }}
     </div>
 
+    <div class="divider"></div>
+
     <!-- Footer -->
-    <div class="center">
+    <div class="center footer">
         {% if params.system.hash is defined and params.system.hash %}
-            Hash: {{ params.system.hash }}<br>
+            <div><strong>Hash:</strong> {{ params.system.hash }}</div>
         {% endif %}
-        <img src="{{ qrCode(doc)|image_b64('svg+xml') }}" width="120"><br>
-        -------------------------------<br>
-        ¡Gracias por su compra!<br>
-        Representación impresa de la {{ name }} ELECTRÓNICA.
+        <img class="qr" src="{{ qrCode(doc)|image_b64('svg+xml') }}" width="120"><br>
+        <div>¡Gracias por su compra!</div>
+        <div>Representación impresa de la {{ name }} ELECTRÓNICA</div>
     </div>
 </body>
 </html>
