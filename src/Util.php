@@ -291,6 +291,6 @@ class MyTemplateResolver implements TemplateResolverInterface
         }
 
         // fallback (facturas u otros)
-        return 'invoice.html.twig';
+        return 'voided.html.twig';
     }
 }
