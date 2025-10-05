@@ -61,7 +61,7 @@ final class Util
          * Usuario = MODDATOS
          * Clave   = moddatos
          */
-        $see->setClaveSOL('10720180885', 'TORYNEPI', 'ychbyebra');
+        $see->setClaveSOL('10720180885', 'AXEL9R2T', 'AXEL9R2T');
         $see->setCachePath(__DIR__ . '/../cache');
 
         return $see;
