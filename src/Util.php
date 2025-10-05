@@ -61,7 +61,7 @@ final class Util
          * Usuario = MODDATOS
          * Clave   = moddatos
          */
-        $see->setClaveSOL('20123456789', 'MODDATOS', 'moddatos');
+        $see->setClaveSOL('10720180885', 'TORYNEPI', 'ychbyebra');
         $see->setCachePath(__DIR__ . '/../cache');
 
         return $see;
@@ -84,7 +84,7 @@ final class Util
             'cache' => false,
         ])
             ->setApiCredentials('test-85e5b0ae-255c-4891-a595-0b98c65c9854', 'test-Hty/M6QshYvPgItX2P0+Kw==')
-            ->setClaveSOL('20161515648', 'MODDATOS', 'MODDATOS')
+            ->setClaveSOL('10720180885', 'TORYNEPI', 'ychbyebra')
             ->setCertificate($certificate);
     }
 
@@ -100,7 +100,7 @@ final class Util
                 ->setProvincia('LIMA')
                 ->setDistrito('LIMA')
                 ->setUrbanizacion('-')
-                ->setDireccion('JR. LOS OLIVOS 123'));
+                ->setDireccion('Av san Lorenzo 202 las vegas  puente piedra'));
     }
 
 
