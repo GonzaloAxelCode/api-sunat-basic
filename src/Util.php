@@ -49,27 +49,17 @@ final class Util
     {
         $see = new See();
         $see->setService($endpoint);
-        //        $see->setCodeProvider(new XmlErrorCodeProvider());
         $certificate = file_get_contents(__DIR__ . '/../resources/cert.pem');
         if ($certificate === false) {
             throw new Exception('No se pudo cargar el certificado');
         }
         $see->setCertificate($certificate);
-        /**
-         * Clave SOL
-         * Ruc     = 20000000001
-         * Usuario = MODDATOS
-         * Clave   = moddatos
-         */
-        //$see->setClaveSOL('10720180885', 'TORYNEPI', 'ychbyebra');
-
-        $see->setCredentials('10720180885TORYNEPI', 'ychbyebra');
-
+        $see->setClaveSOL('10720180885', 'TORYNEPI', 'ychbyebra');
         $see->setCachePath(__DIR__ . '/../cache');
 
         return $see;
     }
-
+    /**
     public function getSeeApi()
     {
         $api = new \Greenter\Api([
@@ -87,9 +77,10 @@ final class Util
             'cache' => false,
         ])
             ->setApiCredentials('test-85e5b0ae-255c-4891-a595-0b98c65c9854', 'test-Hty/M6QshYvPgItX2P0+Kw==')
+
             ->setClaveSOL('10720180885', 'TORYNEPI', 'ychbyebra');
     }
-
+     **/
     public function getGRECompany(): \Greenter\Model\Company\Company
     {
         return (new \Greenter\Model\Company\Company())
