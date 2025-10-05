@@ -67,7 +67,7 @@ final class Util
         return $see;
     }
 
-    public function getSeeApi()
+    public function getSeeApi_original()
     {
         $api = new \Greenter\Api([
             'auth' => 'https://gre-test.nubefact.com/v1',
@@ -85,6 +85,52 @@ final class Util
         ])
             ->setApiCredentials('test-85e5b0ae-255c-4891-a595-0b98c65c9854', 'test-Hty/M6QshYvPgItX2P0+Kw==')
             ->setClaveSOL('10720180885', 'TORYNEPI', 'ychbyebra')
+            ->setCertificate($certificate);
+    }
+    public function getSeeApi()
+    {
+        // === 1. Configuración de la API ===
+        $api = new \Greenter\Api([
+            'auth' => 'https://gre-test.nubefact.com/v1',
+            'cpe'  => 'https://gre-test.nubefact.com/v1',
+        ]);
+
+        // === 2. Ruta y contraseña del certificado P12 ===
+        $p12Path = __DIR__ . '/../resources/certificado.p12';  // tu archivo .p12
+        $password = 'Axel9r2t5';            // <-- pon la clave correcta
+
+        // === 3. Leer el archivo .p12 ===
+        $p12Content = @file_get_contents($p12Path);
+        if ($p12Content === false) {
+            throw new Exception("❌ No se pudo leer el certificado P12 en: $p12Path");
+        }
+
+        // === 4. Convertir a formato PEM (que Greenter sí entiende) ===
+        $certs = [];
+        if (!openssl_pkcs12_read($p12Content, $certs, $password)) {
+            throw new Exception("❌ No se pudo procesar el P12. Verifica la contraseña.");
+        }
+
+        // Combina el certificado público + la clave privada
+        $certificate = $certs['cert'] . $certs['pkey'];
+
+        // === 5. Retornar el objeto configurado ===
+        return $api
+            ->setBuilderOptions([
+                'strict_variables' => true,
+                'optimizations'    => 0,
+                'debug'            => true,
+                'cache'            => false,
+            ])
+            ->setApiCredentials(
+                'test-85e5b0ae-255c-4891-a595-0b98c65c9854',
+                'test-Hty/M6QshYvPgItX2P0+Kw=='
+            )
+            ->setClaveSOL(
+                '10720180885', // RUC
+                'TORYNEPI',    // Usuario SOL
+                'ychbyebra'    // Clave SOL
+            )
             ->setCertificate($certificate);
     }
 
