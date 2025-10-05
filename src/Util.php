@@ -91,9 +91,18 @@ final class Util
     public function getGRECompany(): \Greenter\Model\Company\Company
     {
         return (new \Greenter\Model\Company\Company())
-            ->setRuc('20161515648')
-            ->setRazonSocial('GREENTER S.A.C.');
+            ->setRuc('10720180885')
+            ->setRazonSocial('SILVA ESPINOZA WALTER FREDDY')
+            ->setNombreComercial('MOVIL AXEL')
+            ->setAddress((new \Greenter\Model\Company\Address())
+                ->setUbigueo('150101') // Código de distrito (ejemplo Lima)
+                ->setDepartamento('LIMA')
+                ->setProvincia('LIMA')
+                ->setDistrito('LIMA')
+                ->setUrbanizacion('-')
+                ->setDireccion('JR. LOS OLIVOS 123'));
     }
+
 
     public function showResponse(DocumentInterface $document, CdrResponse $cdr): void
     {
