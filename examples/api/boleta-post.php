@@ -80,7 +80,7 @@ $invoice->setDetails($items)
     ]);
 
 // Enviar a SUNAT
-$see = $util->getSee(SunatEndpoints::FE_BETA);
+$see = $util->getSee(SunatEndpoints::FE_PRODUCCION);
 $res = $see->send($invoice);
 
 // Si la boleta no fue aceptada, devolver error
