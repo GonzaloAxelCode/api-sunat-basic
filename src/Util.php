@@ -54,7 +54,7 @@ final class Util
             throw new Exception('No se pudo cargar el certificado');
         }
         $see->setCertificate($certificate);
-        $see->setClaveSOL('10720180885', 'TORYNEPI', 'ychbyebra');
+        $see->setClaveSOL('10720180885', 'AXELSE12', 'Axel9r2t5');
         $see->setCachePath(__DIR__ . '/../cache');
 
         return $see;

@@ -48,7 +48,8 @@ $invoice->setUblVersion('2.1')
     ->setFechaEmision(new DateTime())
     ->setFormaPago(new FormaPagoContado())
     ->setTipoMoneda($data['moneda'] ?? 'PEN')
-    ->setCompany($util->shared->getCompany())
+
+    ->setCompany($util->getGRECompany())
     ->setClient($client)
     ->setMtoOperGravadas($data['gravadas'] ?? 200)
     ->setMtoOperExoneradas($data['exoneradas'] ?? 100)
@@ -82,7 +83,7 @@ $invoice->setDetails($items)
         (new Legend())->setCode('1000')->setValue($data['leyenda'] ?? 'Monto en letras')
     ]);
 
-$see = $util->getSee(SunatEndpoints::FE_BETA);
+$see = $util->getSee(SunatEndpoints::FE_PRODUCCION);
 $res = $see->send($invoice);
 
 $xmlFilename = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.xml";
