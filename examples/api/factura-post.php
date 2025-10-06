@@ -82,8 +82,8 @@ $invoice->setDetails($items)
     ->setLegends([
         (new Legend())->setCode('1000')->setValue($data['leyenda'] ?? 'Monto en letras')
     ]);
-
-$see = $util->getSee(SunatEndpoints::FE_PRODUCCION);
+//camvio
+$see = $util->getSee(SunatEndpoints::FE_BETA);
 $res = $see->send($invoice);
 
 $xmlFilename = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.xml";
