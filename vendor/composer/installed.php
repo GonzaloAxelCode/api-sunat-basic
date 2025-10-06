@@ -3,11 +3,11 @@
         'name' => 'greenter/demo',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'ab196a1cd19ad7b389a5478205549446b19c048a',
+        'reference' => '574046fe40a5e2b35c34e40c34adfcc0c52dddf7',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'dev' => true,
+        'dev' => false,
     ),
     'versions' => array(
         'bacon/bacon-qr-code' => array(
@@ -49,7 +49,7 @@
         'greenter/demo' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'ab196a1cd19ad7b389a5478205549446b19c048a',
+            'reference' => '574046fe40a5e2b35c34e40c34adfcc0c52dddf7',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -180,15 +180,6 @@
             'install_path' => __DIR__ . '/../nelexa/zip',
             'aliases' => array(),
             'dev_requirement' => false,
-        ),
-        'phpstan/phpstan' => array(
-            'pretty_version' => '1.10.47',
-            'version' => '1.10.47.0',
-            'reference' => '84dbb33b520ea28b6cf5676a3941f4bae1c1ff39',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../phpstan/phpstan',
-            'aliases' => array(),
-            'dev_requirement' => true,
         ),
         'psr/http-client' => array(
             'pretty_version' => '1.0.3',
