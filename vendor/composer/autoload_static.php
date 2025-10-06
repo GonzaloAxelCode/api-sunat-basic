@@ -13,7 +13,6 @@ class ComposerStaticInit27ebe7527bb6338402fab7623dbb3370
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
-        '9b38cf48e83f5d8f60375221cd213eee' => __DIR__ . '/..' . '/phpstan/phpstan/bootstrap.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -470,7 +469,6 @@ class ComposerStaticInit27ebe7527bb6338402fab7623dbb3370
         'GuzzleHttp\\RetryMiddleware' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/RetryMiddleware.php',
         'GuzzleHttp\\TransferStats' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/TransferStats.php',
         'GuzzleHttp\\Utils' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/Utils.php',
-        'MyTemplateResolver' => __DIR__ . '/../..' . '/src/MyTemplateResolver.php',
         'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
         'PhpZip\\Constants\\DosAttrs' => __DIR__ . '/..' . '/nelexa/zip/src/Constants/DosAttrs.php',
         'PhpZip\\Constants\\DosCodePage' => __DIR__ . '/..' . '/nelexa/zip/src/Constants/DosCodePage.php',

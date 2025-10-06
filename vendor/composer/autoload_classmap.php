@@ -326,7 +326,6 @@ return array(
     'GuzzleHttp\\RetryMiddleware' => $vendorDir . '/guzzlehttp/guzzle/src/RetryMiddleware.php',
     'GuzzleHttp\\TransferStats' => $vendorDir . '/guzzlehttp/guzzle/src/TransferStats.php',
     'GuzzleHttp\\Utils' => $vendorDir . '/guzzlehttp/guzzle/src/Utils.php',
-    'MyTemplateResolver' => $baseDir . '/src/MyTemplateResolver.php',
     'PhpToken' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
     'PhpZip\\Constants\\DosAttrs' => $vendorDir . '/nelexa/zip/src/Constants/DosAttrs.php',
     'PhpZip\\Constants\\DosCodePage' => $vendorDir . '/nelexa/zip/src/Constants/DosCodePage.php',
