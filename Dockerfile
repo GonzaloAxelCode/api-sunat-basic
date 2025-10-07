@@ -1,39 +1,47 @@
 FROM php:7.4-alpine3.13
+
 LABEL owner="Giancarlos Salas"
 LABEL maintainer="giansalex@gmail.com"
 
-# Install deps
-RUN apk update && apk add --no-cache wkhtmltopdf ttf-droid libzip
-
-# Install php dev dependencies
-RUN apk add --no-cache --virtual .build-green-deps \
+# Instalar dependencias de sistema
+RUN apk update && apk add --no-cache \
+    wkhtmltopdf \
+    ttf-droid \
+    libzip \
     git \
     unzip \
     curl \
-    libxml2-dev
+    libxml2-dev \
+    bash \
+    openssl
 
-# Configure php extensions
-RUN docker-php-ext-install soap && \
-    docker-php-ext-configure opcache --enable-opcache && \
-    docker-php-ext-install opcache
+# Instalar extensiones PHP necesarias
+RUN docker-php-ext-install \
+    soap \
+    zip \
+    opcache \
+    pcntl
 
-ENV DOCKER 1
-
+# Configurar opcache
 COPY docker/config/opcache.ini $PHP_INI_DIR/conf.d/
 
-COPY . /var/www/html/
+# Copiar proyecto
+COPY . /var/www/html
 
-# Install Packages
-RUN curl --silent --show-error -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-    cd /var/www/html && \
-    mkdir ./cache && chmod -R 777 ./cache && \
-    mkdir ./files && chmod -R 777 ./files && \
-    composer install --no-interaction --no-dev -o -a
+# Crear carpetas con permisos
+RUN mkdir -p /var/www/html/cache /var/www/html/files && \
+    chmod -R 777 /var/www/html/cache /var/www/html/files
 
-RUN apk del .build-green-deps && \
-    rm -rf /var/cache/apk/*
+# Instalar Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /var/www/html
+
+# Instalar dependencias PHP con Composer
+RUN composer install --no-interaction --no-dev -o -a
+
+# Limpiar dependencias de build si fueran necesarias
+# (en este caso ya las instalamos globalmente con apk, así que no hay virtual package que eliminar)
 
 EXPOSE 8000
 
