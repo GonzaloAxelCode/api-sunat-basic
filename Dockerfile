@@ -1,54 +1,39 @@
-FROM php:8.1-alpine3.17
-
+FROM php:7.4-alpine3.13
 LABEL owner="Giancarlos Salas"
 LABEL maintainer="giansalex@gmail.com"
 
-# ----------------------------
-# Dependencias del sistema
-# ----------------------------
-RUN apk update && apk add --no-cache \
-    wkhtmltopdf \
-    ttf-droid \
-    bash \
-    openssl \
+# Install deps
+RUN apk update && apk add --no-cache wkhtmltopdf ttf-droid libzip
+
+# Install php dev dependencies
+RUN apk add --no-cache --virtual .build-green-deps \
     git \
     unzip \
     curl \
-    libzip-dev \
-    libxml2-dev \
-    oniguruma-dev \
-    autoconf \
-    g++ \
-    make
+    libxml2-dev
 
-# ----------------------------
-# Extensiones PHP
-# ----------------------------
-RUN docker-php-ext-install \
-    soap \
-    zip \
-    pcntl \
-    opcache
+# Configure php extensions
+RUN docker-php-ext-install soap && \
+    docker-php-ext-configure opcache --enable-opcache && \
+    docker-php-ext-install opcache
 
-# Configuración opcache
+ENV DOCKER 1
+
 COPY docker/config/opcache.ini $PHP_INI_DIR/conf.d/
 
-# Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+COPY . /var/www/html/
 
-# Proyecto
-COPY . /var/www/html
+# Install Packages
+RUN curl --silent --show-error -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    cd /var/www/html && \
+    mkdir ./cache && chmod -R 777 ./cache && \
+    mkdir ./files && chmod -R 777 ./files && \
+    composer install --no-interaction --no-dev -o -a
 
-RUN mkdir -p /var/www/html/cache /var/www/html/files && \
-    chmod -R 777 /var/www/html/cache /var/www/html/files
+RUN apk del .build-green-deps && \
+    rm -rf /var/cache/apk/*
 
 WORKDIR /var/www/html
-
-# Dependencias PHP
-RUN composer install --no-interaction --no-dev -o -a
-
-# Limpiar dependencias de build
-RUN apk del autoconf g++ make
 
 EXPOSE 8000
 
