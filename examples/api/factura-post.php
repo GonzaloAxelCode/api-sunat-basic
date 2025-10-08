@@ -17,7 +17,7 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 $util = Util::getInstance();
 
-$baseUrl = "https://api-sunat-basic.onrender.com/public/facturas/";
+$baseUrl = $domain . "/public/facturas/";
 
 $json = file_get_contents("php://input");
 $data = json_decode($json, true);

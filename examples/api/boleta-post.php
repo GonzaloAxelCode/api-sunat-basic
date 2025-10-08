@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 header("Content-Type: application/json"); // La respuesta será JSON
+require 'domain.php';
 
 use Greenter\Model\Client\Client;
 use Greenter\Model\Sale\Invoice;
@@ -15,7 +16,7 @@ require __DIR__ . '/../../vendor/autoload.php';
 $util = Util::getInstance();
 
 // URL base para los archivos generados (CAMBIAR EN PRODUCCIÓN)
-$baseUrl = "https://api-sunat-basic.onrender.com/public/boletas/";
+$baseUrl = $domain . "/public/boletas/";
 
 // Leer el JSON de la solicitud POST
 $json = file_get_contents("php://input");

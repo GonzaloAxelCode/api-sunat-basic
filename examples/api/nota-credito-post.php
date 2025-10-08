@@ -266,9 +266,9 @@ try {
         "correlativo" => $correlativo,
         "cdr_codigo" => $cdr->getCode(),
         "cdr_descripcion" => $cdr->getDescription(),
-        "xml_url" => "https://tu-dominio.com/public/notas/xml/" . $note->getName() . ".xml",
-        "cdr_url" => "https://tu-dominio.com/public/notas/cdr/R-" . $note->getName() . ".zip",
-        "pdf_url" => "https://tu-dominio.com/public/notas/pdf/" . $note->getName() . ".pdf"
+        "xml_url" => $domain . "/public/notas/xml/" . $note->getName() . ".xml",
+        "cdr_url" =>  $domain . "/public/notas/cdr/R-" . $note->getName() . ".zip",
+        "pdf_url" => $domain . "/public/notas/pdf/" . $note->getName() . ".pdf"
     ]);
 } catch (Exception $e) {
     echo json_encode([
