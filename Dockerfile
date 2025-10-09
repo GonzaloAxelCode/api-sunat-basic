@@ -42,6 +42,7 @@ RUN composer dump-autoload --optimize && \
     chmod -R 777 ./cache ./files && \
     mkdir -p public/boletas/xml public/boletas/pdf public/boletas/cdr && \
     mkdir -p public/notas/xml public/notas/pdf public/notas/cdr && \
+    mkdir -p public/facturas/xml public/facturas/pdf public/facturas/cdr && \
     chmod -R 777 public/
 
 # Limpiar dependencias de build
@@ -50,4 +51,5 @@ RUN apk del .build-green-deps && \
 
 EXPOSE 8000
 
-ENTRYPOINT ["php", "-S", "0.0.0.0:8000"]
+# Usar router.php para servir archivos estáticos correctamente
+ENTRYPOINT ["php", "-S", "0.0.0.0:8000", "-t", "/var/www/html", "router.php"]
