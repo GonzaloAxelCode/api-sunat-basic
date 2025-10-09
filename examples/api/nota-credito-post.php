@@ -10,6 +10,7 @@ use Greenter\Model\Sale\SaleDetail;
 use Greenter\Model\Sale\Legend;
 use Greenter\Ws\Services\SunatEndpoints;
 
+$baseUrl = $domain . "/public/facturas/";
 $util = Util::getInstance();
 
 // 📥 Leer JSON desde Django
@@ -266,9 +267,9 @@ try {
         "correlativo" => $correlativo,
         "cdr_codigo" => $cdr->getCode(),
         "cdr_descripcion" => $cdr->getDescription(),
-        "xml_url" => $domain . "/public/notas/xml/" . $note->getName() . ".xml",
-        "cdr_url" =>  $domain . "/public/notas/cdr/R-" . $note->getName() . ".zip",
-        "pdf_url" => $domain . "/public/notas/pdf/" . $note->getName() . ".pdf"
+        "xml_url" => $baseUrl . "/public/notas/xml/" . $note->getName() . ".xml",
+        "cdr_url" =>  $baseUrl . "/public/notas/cdr/R-" . $note->getName() . ".zip",
+        "pdf_url" => $baseUrl . "/public/notas/pdf/" . $note->getName() . ".pdf"
     ]);
 } catch (Exception $e) {
     echo json_encode([

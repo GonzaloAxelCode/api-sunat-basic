@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: "Courier New", monospace;
+            font-size: 10px;
+            margin: 5px;
+            width: 70mm;
+        }
+        .center {
+            text-align: center;
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .line {
+            border-top: 1px dashed #333;
+            margin: 8px 0;
+        }
+        .header-box {
+            border: 1px solid #333;
+            padding: 5px;
+            margin: 5px 0;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        .nota-info {
+            background-color: #fffacd;
+            padding: 5px;
+            margin: 8px 0;
+            border: 1px solid #333;
+            font-size: 9px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 5px 0;
+        }
+        td {
+            padding: 2px 0;
+            font-size: 9px;
+        }
+        .item-row {
+            border-bottom: 1px dotted #ccc;
+            padding: 3px 0;
+        }
+        .right {
+            text-align: right;
+        }
+        .qr {
+            margin: 8px auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    {% set cp = doc.company %}
+    {% set cl = doc.client %}
+    {% set moneda = doc.tipoMoneda|catalog('02') %}
+    {% set name = doc.tipoDoc|catalog('01') %}
+
+    <!-- LOGO Y EMPRESA -->
+    <div class="center">
+        <img src="{{ params.system.logo|image_b64 }}" height="40"><br>
+        <div class="bold">{{ cp.razonSocial }}</div>
+        RUC: {{ cp.ruc }}<br>
+        {{ cp.address.direccion }}
+    </div>
+
+    <div class="line"></div>
+
+    <!-- TIPO DE DOCUMENTO -->
+    <div class="header-box bold">
+        {{ name }}<br>
+        {{ doc.serie }}-{{ doc.correlativo }}
+    </div>
+
+    <!-- INFORMACIÓN DE LA NOTA -->
+    <div class="nota-info">
+        <strong>MODIFICA:</strong><br>
+        {{ doc.tipDocAfectado|catalog('01') }}<br>
+        {{ doc.numDocfectado }}<br>
+        <strong>MOTIVO:</strong><br>
+        {{ doc.desMotivo }}
+    </div>
+
+    <div class="line"></div>
+
+    <!-- CLIENTE -->
+    <div>
+        <strong>Cliente:</strong> {{ cl.rznSocial }}<br>
+        <strong>{{ cl.tipoDoc|catalog('06') }}:</strong> {{ cl.numDoc }}<br>
+        <strong>Fecha:</strong> {{ doc.fechaEmision|date('d/m/Y H:i') }}
+    </div>
+
+    <div class="line"></div>
+
+    <!-- ITEMS -->
+    <div class="bold">DETALLE:</div>
+    {% for det in doc.details %}
+    <div class="item-row">
+        <div>{{ det.descripcion }}</div>
+        <table>
+            <tr>
+                <td>{{ det.cantidad|n_format }} x {{ moneda }} {{ det.mtoValorUnitario|n_format }}</td>
+                <td class="right bold">{{ moneda }} {{ det.mtoValorVenta|n_format }}</td>
+            </tr>
+        </table>
+    </div>
+    {% endfor %}
+
+    <div class="line"></div>
+
+    <!-- TOTALES -->
+    <table>
+        {% if doc.mtoOperGravadas %}
+        <tr>
+            <td>Op. Gravadas:</td>
+            <td class="right">{{ moneda }} {{ doc.mtoOperGravadas|n_format }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td>IGV (18%):</td>
+            <td class="right">{{ moneda }} {{ doc.mtoIGV|n_format }}</td>
+        </tr>
+        <tr>
+            <td class="bold">TOTAL:</td>
+            <td class="right bold">{{ moneda }} {{ doc.mtoImpVenta|n_format }}</td>
+        </tr>
+    </table>
+
+    {% if doc.legends %}
+    <div class="line"></div>
+    <div style="font-size: 8px;">
+        <strong>SON:</strong> {{ legend(doc.legends, '1000') }}
+    </div>
+    {% endif %}
+
+    <div class="line"></div>
+
+    <!-- QR -->
+    <div class="center">
+        <img class="qr" src="{{ qrCode(doc)|image_b64('svg+xml') }}" width="100">
+    </div>
+
+    <!-- FOOTER -->
+    <div class="center" style="font-size: 8px;">
+        Representación impresa de<br>
+        la {{ name }} ELECTRÓNICA<br>
+        ¡Gracias por su preferencia!
+    </div>
+</body>
+</html>

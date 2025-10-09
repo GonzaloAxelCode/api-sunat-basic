@@ -270,20 +270,30 @@ class MyTemplateResolver implements TemplateResolverInterface
     {
         $this->format = $format;
     }
+
     public function getTemplate(DocumentInterface $document): string
     {
-
-
         $tipoDoc = method_exists($document, 'getTipoDoc') ? $document->getTipoDoc() : 'N/A';
-        error_log($tipoDoc);
-        if ($tipoDoc === '03') {
+        error_log("Tipo de documento: " . $tipoDoc);
 
+        // 03 = Boleta de Venta
+        if ($tipoDoc === '03') {
             return $this->format === 'ticket' ? 'ticket.html.twig' : 'ticket_pdf.html.twig';
         }
-        if ($tipoDoc === "01") {
-            return 'summary.html.twig';
+
+        // 01 = Factura
+        if ($tipoDoc === '01') {
+            return 'factura_pdf.html.twig';
         }
 
+        // 07 = Nota de Crédito
+        if ($tipoDoc === '07') {
+            return $this->format === 'ticket' ? 'note_credit_ticket.html.twig' : 'note_credit_pdf.html.twig';
+        }
+
+
+
+        // Otros documentos
         return 'voided.html.twig';
     }
 }
