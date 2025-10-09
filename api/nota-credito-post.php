@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 header("Content-Type: application/json");
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use Greenter\Model\Response\BillResult;
 use Greenter\Model\Sale\Note;
