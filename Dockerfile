@@ -17,30 +17,36 @@ RUN docker-php-ext-install soap && \
     docker-php-ext-configure opcache --enable-opcache && \
     docker-php-ext-install opcache
 
-ENV DOCKER 1
+ENV DOCKER=1
 
 COPY docker/config/opcache.ini $PHP_INI_DIR/conf.d/
 
-COPY . /var/www/html/
-# Instalar Composer
+# Instalar Composer primero
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copiar archivos
-COPY . /var/www/html
+# Establecer directorio de trabajo
+WORKDIR /var/www/html
 
-# Instalar dependencias
-RUN composer install --no-dev --optimize-autoloader
-# Install Packages
-RUN curl --silent --show-error -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-    cd /var/www/html && \
-    mkdir ./cache && chmod -R 777 ./cache && \
-    mkdir ./files && chmod -R 777 ./files && \
-    composer install --no-interaction --no-dev -o -a
+# Copiar solo composer.json y composer.lock primero (para cache de Docker)
+COPY composer.json composer.lock* ./
 
+# Instalar dependencias de PHP
+RUN composer install --no-interaction --no-dev --optimize-autoloader --no-scripts
+
+# Copiar el resto de los archivos
+COPY . /var/www/html/
+
+# Generar autoloader y crear carpetas necesarias
+RUN composer dump-autoload --optimize && \
+    mkdir -p ./cache ./files && \
+    chmod -R 777 ./cache ./files && \
+    mkdir -p public/boletas/xml public/boletas/pdf public/boletas/cdr && \
+    mkdir -p public/notas/xml public/notas/pdf public/notas/cdr && \
+    chmod -R 777 public/
+
+# Limpiar dependencias de build
 RUN apk del .build-green-deps && \
     rm -rf /var/cache/apk/*
-
-WORKDIR /var/www/html
 
 EXPOSE 8000
 
