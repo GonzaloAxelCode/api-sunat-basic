@@ -22,7 +22,14 @@ ENV DOCKER 1
 COPY docker/config/opcache.ini $PHP_INI_DIR/conf.d/
 
 COPY . /var/www/html/
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copiar archivos
+COPY . /var/www/html
+
+# Instalar dependencias
+RUN composer install --no-dev --optimize-autoloader
 # Install Packages
 RUN curl --silent --show-error -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     cd /var/www/html && \
