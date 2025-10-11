@@ -1,9 +1,14 @@
 {
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "1b174e00af1b7dbb257dc06501aa427b",
     "packages": [
         {
             "name": "aws/aws-crt-php",
             "version": "v1.2.7",
-            "version_normalized": "1.2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/awslabs/aws-crt-php.git",
@@ -25,9 +30,7 @@
             "suggest": {
                 "ext-awscrt": "Make sure you install awscrt native extension to use any of the functionality."
             },
-            "time": "2024-10-18T22:15:13+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "classmap": [
                     "src/"
@@ -55,12 +58,11 @@
                 "issues": "https://github.com/awslabs/aws-crt-php/issues",
                 "source": "https://github.com/awslabs/aws-crt-php/tree/v1.2.7"
             },
-            "install-path": "../aws/aws-crt-php"
+            "time": "2024-10-18T22:15:13+00:00"
         },
         {
             "name": "aws/aws-sdk-php",
             "version": "3.337.3",
-            "version_normalized": "3.337.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
@@ -110,14 +112,12 @@
                 "ext-openssl": "Allows working with CloudFront private distributions and verifying received SNS messages",
                 "ext-sockets": "To use client-side monitoring"
             },
-            "time": "2025-01-21T19:10:05+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "3.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "files": [
                     "src/functions.php"
@@ -156,12 +156,11 @@
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
                 "source": "https://github.com/aws/aws-sdk-php/tree/3.337.3"
             },
-            "install-path": "../aws/aws-sdk-php"
+            "time": "2025-01-21T19:10:05+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
             "version": "2.0.8",
-            "version_normalized": "2.0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Bacon/BaconQrCode.git",
@@ -187,9 +186,7 @@
             "suggest": {
                 "ext-imagick": "to generate QR code images"
             },
-            "time": "2022-12-07T17:46:57+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "BaconQrCode\\": "src/"
@@ -213,12 +210,11 @@
                 "issues": "https://github.com/Bacon/BaconQrCode/issues",
                 "source": "https://github.com/Bacon/BaconQrCode/tree/2.0.8"
             },
-            "install-path": "../bacon/bacon-qr-code"
+            "time": "2022-12-07T17:46:57+00:00"
         },
         {
             "name": "dasprid/enum",
             "version": "1.0.7",
-            "version_normalized": "1.0.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DASPRiD/Enum.git",
@@ -237,9 +233,7 @@
                 "phpunit/phpunit": "^7 || ^8 || ^9 || ^10 || ^11",
                 "squizlabs/php_codesniffer": "*"
             },
-            "time": "2025-09-16T12:23:56+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "DASPRiD\\Enum\\": "src/"
@@ -266,12 +260,11 @@
                 "issues": "https://github.com/DASPRiD/Enum/issues",
                 "source": "https://github.com/DASPRiD/Enum/tree/1.0.7"
             },
-            "install-path": "../dasprid/enum"
+            "time": "2025-09-16T12:23:56+00:00"
         },
         {
             "name": "greenter/core",
             "version": "v5.1.1",
-            "version_normalized": "5.1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thegreenter/core.git",
@@ -286,14 +279,12 @@
             "require": {
                 "php": ">=7.4"
             },
-            "time": "2023-01-11T17:16:15+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "5.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Greenter\\": "src/Core/"
@@ -320,12 +311,11 @@
                 "forum": "https://community.greenter.dev/",
                 "source": "https://github.com/thegreenter/core/tree/v5.1.1"
             },
-            "install-path": "../greenter/core"
+            "time": "2023-01-11T17:16:15+00:00"
         },
         {
             "name": "greenter/data",
             "version": "v5.1.1",
-            "version_normalized": "5.1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thegreenter/data.git",
@@ -341,14 +331,12 @@
                 "greenter/core": "^5.0",
                 "php": ">=7.4"
             },
-            "time": "2023-05-03T05:20:57+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "5.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Greenter\\": "src/"
@@ -375,12 +363,11 @@
                 "forum": "https://community.greenter.dev/",
                 "source": "https://github.com/thegreenter/data/tree/v5.1.1"
             },
-            "install-path": "../greenter/data"
+            "time": "2023-05-03T05:20:57+00:00"
         },
         {
             "name": "greenter/gre-api",
             "version": "v1.0.2",
-            "version_normalized": "1.0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thegreenter/gre-api.git",
@@ -404,9 +391,7 @@
                 "phpstan/phpstan": "^0.12.51",
                 "phpunit/phpunit": "^8.0 || ^9.0"
             },
-            "time": "2023-01-13T21:00:27+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Greenter\\Sunat\\GRE\\": "src/"
@@ -434,12 +419,11 @@
                 "issues": "https://github.com/thegreenter/gre-api/issues",
                 "source": "https://github.com/thegreenter/gre-api/tree/v1.0.2"
             },
-            "install-path": "../greenter/gre-api"
+            "time": "2023-01-13T21:00:27+00:00"
         },
         {
             "name": "greenter/htmltopdf",
             "version": "v5.1.1",
-            "version_normalized": "5.1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thegreenter/htmltopdf.git",
@@ -462,14 +446,12 @@
             "suggest": {
                 "greenter/report": "Html Reporter"
             },
-            "time": "2023-01-11T17:16:13+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "5.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Greenter\\": "src/"
@@ -496,12 +478,11 @@
                 "forum": "https://community.greenter.dev/",
                 "source": "https://github.com/thegreenter/htmltopdf/tree/v5.1.1"
             },
-            "install-path": "../greenter/htmltopdf"
+            "time": "2023-01-11T17:16:13+00:00"
         },
         {
             "name": "greenter/lite",
             "version": "v5.1.1",
-            "version_normalized": "5.1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thegreenter/lite.git",
@@ -524,14 +505,12 @@
             "require-dev": {
                 "phpunit/phpunit": "^9"
             },
-            "time": "2023-05-03T05:20:55+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "5.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Greenter\\": "src/Greenter/"
@@ -560,12 +539,11 @@
                 "issues": "https://github.com/thegreenter/lite/issues",
                 "source": "https://github.com/thegreenter/lite/tree/v5.1.1"
             },
-            "install-path": "../greenter/lite"
+            "time": "2023-05-03T05:20:55+00:00"
         },
         {
             "name": "greenter/report",
             "version": "v5.1.1",
-            "version_normalized": "5.1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thegreenter/report.git",
@@ -587,14 +565,12 @@
                 "greenter/data": "^5.0",
                 "phpunit/phpunit": "^9"
             },
-            "time": "2024-11-20T01:09:14+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "5.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Greenter\\": "src/"
@@ -622,12 +598,11 @@
                 "forum": "https://community.greenter.dev/",
                 "source": "https://github.com/thegreenter/report/tree/v5.1.1"
             },
-            "install-path": "../greenter/report"
+            "time": "2024-11-20T01:09:14+00:00"
         },
         {
             "name": "greenter/ws",
             "version": "v5.1.1",
-            "version_normalized": "5.1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thegreenter/ws.git",
@@ -655,14 +630,12 @@
             "suggest": {
                 "ext-curl": "Necesario para enviar guia de remision"
             },
-            "time": "2023-05-03T05:20:55+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "5.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Greenter\\": "src/"
@@ -690,12 +663,11 @@
                 "forum": "https://community.greenter.dev/",
                 "source": "https://github.com/thegreenter/ws/tree/v5.1.1"
             },
-            "install-path": "../greenter/ws"
+            "time": "2023-05-03T05:20:55+00:00"
         },
         {
             "name": "greenter/xml",
             "version": "v5.1.1",
-            "version_normalized": "5.1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thegreenter/xml.git",
@@ -717,14 +689,12 @@
                 "greenter/ubl-validator": "^2.0",
                 "phpunit/phpunit": "^9"
             },
-            "time": "2024-07-29T15:56:41+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "5.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Greenter\\": "src/"
@@ -752,12 +722,11 @@
                 "forum": "https://community.greenter.dev/",
                 "source": "https://github.com/thegreenter/xml/tree/v5.1.1"
             },
-            "install-path": "../greenter/xml"
+            "time": "2024-07-29T15:56:41+00:00"
         },
         {
             "name": "greenter/xmldsig",
             "version": "v5.0.3",
-            "version_normalized": "5.0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thegreenter/xmldsig.git",
@@ -774,9 +743,7 @@
                 "ext-openssl": "*",
                 "php": ">=5.5.9"
             },
-            "time": "2020-07-31T04:45:22+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Greenter\\XMLSecLibs\\": "src"
@@ -799,12 +766,11 @@
                 "issues": "https://github.com/thegreenter/xmldsig/issues",
                 "source": "https://github.com/thegreenter/xmldsig/tree/master"
             },
-            "install-path": "../greenter/xmldsig"
+            "time": "2020-07-31T04:45:22+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
             "version": "7.10.0",
-            "version_normalized": "7.10.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
@@ -840,7 +806,6 @@
                 "ext-intl": "Required for Internationalized Domain Name (IDN) support",
                 "psr/log": "Required for using the Log middleware"
             },
-            "time": "2025-08-23T22:36:01+00:00",
             "type": "library",
             "extra": {
                 "bamarni-bin": {
@@ -848,7 +813,6 @@
                     "forward-command": false
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "files": [
                     "src/functions_include.php"
@@ -928,12 +892,11 @@
                     "type": "tidelift"
                 }
             ],
-            "install-path": "../guzzlehttp/guzzle"
+            "time": "2025-08-23T22:36:01+00:00"
         },
         {
             "name": "guzzlehttp/promises",
             "version": "2.3.0",
-            "version_normalized": "2.3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/promises.git",
@@ -952,7 +915,6 @@
                 "bamarni/composer-bin-plugin": "^1.8.2",
                 "phpunit/phpunit": "^8.5.44 || ^9.6.25"
             },
-            "time": "2025-08-22T14:34:08+00:00",
             "type": "library",
             "extra": {
                 "bamarni-bin": {
@@ -960,7 +922,6 @@
                     "forward-command": false
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "GuzzleHttp\\Promise\\": "src/"
@@ -1014,12 +975,11 @@
                     "type": "tidelift"
                 }
             ],
-            "install-path": "../guzzlehttp/promises"
+            "time": "2025-08-22T14:34:08+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
             "version": "2.8.0",
-            "version_normalized": "2.8.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
@@ -1049,7 +1009,6 @@
             "suggest": {
                 "laminas/laminas-httphandlerrunner": "Emit PSR-7 responses"
             },
-            "time": "2025-08-23T21:21:41+00:00",
             "type": "library",
             "extra": {
                 "bamarni-bin": {
@@ -1057,7 +1016,6 @@
                     "forward-command": false
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "GuzzleHttp\\Psr7\\": "src/"
@@ -1133,12 +1091,11 @@
                     "type": "tidelift"
                 }
             ],
-            "install-path": "../guzzlehttp/psr7"
+            "time": "2025-08-23T21:21:41+00:00"
         },
         {
             "name": "mikehaertl/php-shellcommand",
             "version": "1.7.0",
-            "version_normalized": "1.7.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mikehaertl/php-shellcommand.git",
@@ -1156,9 +1113,7 @@
             "require-dev": {
                 "phpunit/phpunit": ">4.0 <=9.4"
             },
-            "time": "2023-04-19T08:25:22+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "mikehaertl\\shellcommand\\": "src/"
@@ -1182,12 +1137,11 @@
                 "issues": "https://github.com/mikehaertl/php-shellcommand/issues",
                 "source": "https://github.com/mikehaertl/php-shellcommand/tree/1.7.0"
             },
-            "install-path": "../mikehaertl/php-shellcommand"
+            "time": "2023-04-19T08:25:22+00:00"
         },
         {
             "name": "mikehaertl/php-tmpfile",
             "version": "1.3.0",
-            "version_normalized": "1.3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mikehaertl/php-tmpfile.git",
@@ -1203,9 +1157,7 @@
                 "php": ">=5.3.0",
                 "phpunit/phpunit": ">4.0 <=9.4"
             },
-            "time": "2024-10-14T16:12:48+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "mikehaertl\\tmp\\": "src/"
@@ -1229,12 +1181,11 @@
                 "issues": "https://github.com/mikehaertl/php-tmpfile/issues",
                 "source": "https://github.com/mikehaertl/php-tmpfile/tree/1.3.0"
             },
-            "install-path": "../mikehaertl/php-tmpfile"
+            "time": "2024-10-14T16:12:48+00:00"
         },
         {
             "name": "mikehaertl/phpwkhtmltopdf",
             "version": "2.5.0",
-            "version_normalized": "2.5.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mikehaertl/phpwkhtmltopdf.git",
@@ -1254,9 +1205,7 @@
             "require-dev": {
                 "phpunit/phpunit": ">4.0 <9.4"
             },
-            "time": "2021-03-01T19:41:06+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "mikehaertl\\wkhtmlto\\": "src"
@@ -1283,12 +1232,11 @@
                 "issues": "https://github.com/mikehaertl/phpwkhtmltopdf/issues",
                 "source": "https://github.com/mikehaertl/phpwkhtmltopdf/tree/2.5.0"
             },
-            "install-path": "../mikehaertl/phpwkhtmltopdf"
+            "time": "2021-03-01T19:41:06+00:00"
         },
         {
             "name": "mtdowling/jmespath.php",
             "version": "2.8.0",
-            "version_normalized": "2.8.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jmespath/jmespath.php.git",
@@ -1308,7 +1256,6 @@
                 "composer/xdebug-handler": "^3.0.3",
                 "phpunit/phpunit": "^8.5.33"
             },
-            "time": "2024-09-04T18:46:31+00:00",
             "bin": [
                 "bin/jp.php"
             ],
@@ -1318,7 +1265,6 @@
                     "dev-master": "2.8-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "files": [
                     "src/JmesPath.php"
@@ -1352,12 +1298,11 @@
                 "issues": "https://github.com/jmespath/jmespath.php/issues",
                 "source": "https://github.com/jmespath/jmespath.php/tree/2.8.0"
             },
-            "install-path": "../mtdowling/jmespath.php"
+            "time": "2024-09-04T18:46:31+00:00"
         },
         {
             "name": "nelexa/zip",
             "version": "4.0.2",
-            "version_normalized": "4.0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Ne-Lexa/php-zip.git",
@@ -1395,9 +1340,7 @@
                 "ext-iconv": "Needed to support convert zip entry name to requested character encoding",
                 "ext-openssl": "Needed to support encrypt zip entries or use ext-mcrypt"
             },
-            "time": "2022-06-17T11:17:46+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "PhpZip\\": "src/"
@@ -1428,68 +1371,11 @@
                 "issues": "https://github.com/Ne-Lexa/php-zip/issues",
                 "source": "https://github.com/Ne-Lexa/php-zip/tree/4.0.2"
             },
-            "install-path": "../nelexa/zip"
-        },
-        {
-            "name": "phpstan/phpstan",
-            "version": "1.12.32",
-            "version_normalized": "1.12.32.0",
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/2770dcdf5078d0b0d53f94317e06affe88419aa8",
-                "reference": "2770dcdf5078d0b0d53f94317e06affe88419aa8",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2|^8.0"
-            },
-            "conflict": {
-                "phpstan/phpstan-shim": "*"
-            },
-            "time": "2025-09-30T10:16:31+00:00",
-            "bin": [
-                "phpstan",
-                "phpstan.phar"
-            ],
-            "type": "library",
-            "installation-source": "dist",
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "PHPStan - PHP Static Analysis Tool",
-            "keywords": [
-                "dev",
-                "static analysis"
-            ],
-            "support": {
-                "docs": "https://phpstan.org/user-guide/getting-started",
-                "forum": "https://github.com/phpstan/phpstan/discussions",
-                "issues": "https://github.com/phpstan/phpstan/issues",
-                "security": "https://github.com/phpstan/phpstan/security/policy",
-                "source": "https://github.com/phpstan/phpstan-src"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/ondrejmirtes",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/phpstan",
-                    "type": "github"
-                }
-            ],
-            "install-path": "../phpstan/phpstan"
+            "time": "2022-06-17T11:17:46+00:00"
         },
         {
             "name": "psr/http-client",
             "version": "1.0.3",
-            "version_normalized": "1.0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-client.git",
@@ -1505,14 +1391,12 @@
                 "php": "^7.0 || ^8.0",
                 "psr/http-message": "^1.0 || ^2.0"
             },
-            "time": "2023-09-23T14:17:50+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "1.0.x-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Psr\\Http\\Client\\": "src/"
@@ -1539,12 +1423,11 @@
             "support": {
                 "source": "https://github.com/php-fig/http-client"
             },
-            "install-path": "../psr/http-client"
+            "time": "2023-09-23T14:17:50+00:00"
         },
         {
             "name": "psr/http-factory",
             "version": "1.1.0",
-            "version_normalized": "1.1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-factory.git",
@@ -1560,14 +1443,12 @@
                 "php": ">=7.1",
                 "psr/http-message": "^1.0 || ^2.0"
             },
-            "time": "2024-04-15T12:06:14+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "1.0.x-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Psr\\Http\\Message\\": "src/"
@@ -1597,12 +1478,11 @@
             "support": {
                 "source": "https://github.com/php-fig/http-factory"
             },
-            "install-path": "../psr/http-factory"
+            "time": "2024-04-15T12:06:14+00:00"
         },
         {
             "name": "psr/http-message",
             "version": "2.0",
-            "version_normalized": "2.0.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-message.git",
@@ -1617,14 +1497,12 @@
             "require": {
                 "php": "^7.2 || ^8.0"
             },
-            "time": "2023-04-04T09:54:51+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "2.0.x-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Psr\\Http\\Message\\": "src/"
@@ -1653,12 +1531,11 @@
             "support": {
                 "source": "https://github.com/php-fig/http-message/tree/2.0"
             },
-            "install-path": "../psr/http-message"
+            "time": "2023-04-04T09:54:51+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
             "version": "3.0.3",
-            "version_normalized": "3.0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ralouphie/getallheaders.git",
@@ -1677,9 +1554,7 @@
                 "php-coveralls/php-coveralls": "^2.1",
                 "phpunit/phpunit": "^5 || ^6.5"
             },
-            "time": "2019-03-08T08:55:37+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "files": [
                     "src/getallheaders.php"
@@ -1700,12 +1575,11 @@
                 "issues": "https://github.com/ralouphie/getallheaders/issues",
                 "source": "https://github.com/ralouphie/getallheaders/tree/develop"
             },
-            "install-path": "../ralouphie/getallheaders"
+            "time": "2019-03-08T08:55:37+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
             "version": "v3.0.2",
-            "version_normalized": "3.0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
@@ -1720,7 +1594,6 @@
             "require": {
                 "php": ">=8.0.2"
             },
-            "time": "2022-01-02T09:55:41+00:00",
             "type": "library",
             "extra": {
                 "thanks": {
@@ -1731,7 +1604,6 @@
                     "dev-main": "3.0-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "files": [
                     "function.php"
@@ -1770,12 +1642,11 @@
                     "type": "tidelift"
                 }
             ],
-            "install-path": "../symfony/deprecation-contracts"
+            "time": "2022-01-02T09:55:41+00:00"
         },
         {
             "name": "symfony/finder",
             "version": "v6.0.19",
-            "version_normalized": "6.0.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
@@ -1790,9 +1661,7 @@
             "require": {
                 "php": ">=8.0.2"
             },
-            "time": "2023-01-20T17:44:14+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Symfony\\Component\\Finder\\": ""
@@ -1834,12 +1703,11 @@
                     "type": "tidelift"
                 }
             ],
-            "install-path": "../symfony/finder"
+            "time": "2023-01-20T17:44:14+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
             "version": "v1.33.0",
-            "version_normalized": "1.33.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
@@ -1860,7 +1728,6 @@
             "suggest": {
                 "ext-ctype": "For best performance"
             },
-            "time": "2024-09-09T11:45:10+00:00",
             "type": "library",
             "extra": {
                 "thanks": {
@@ -1868,7 +1735,6 @@
                     "name": "symfony/polyfill"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "files": [
                     "bootstrap.php"
@@ -1920,12 +1786,11 @@
                     "type": "tidelift"
                 }
             ],
-            "install-path": "../symfony/polyfill-ctype"
+            "time": "2024-09-09T11:45:10+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
             "version": "v1.33.0",
-            "version_normalized": "1.33.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
@@ -1947,7 +1812,6 @@
             "suggest": {
                 "ext-mbstring": "For best performance"
             },
-            "time": "2024-12-23T08:48:59+00:00",
             "type": "library",
             "extra": {
                 "thanks": {
@@ -1955,7 +1819,6 @@
                     "name": "symfony/polyfill"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "files": [
                     "bootstrap.php"
@@ -2008,12 +1871,11 @@
                     "type": "tidelift"
                 }
             ],
-            "install-path": "../symfony/polyfill-mbstring"
+            "time": "2024-12-23T08:48:59+00:00"
         },
         {
             "name": "symfony/polyfill-php81",
             "version": "v1.33.0",
-            "version_normalized": "1.33.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php81.git",
@@ -2028,7 +1890,6 @@
             "require": {
                 "php": ">=7.2"
             },
-            "time": "2024-09-09T11:45:10+00:00",
             "type": "library",
             "extra": {
                 "thanks": {
@@ -2036,7 +1897,6 @@
                     "name": "symfony/polyfill"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "files": [
                     "bootstrap.php"
@@ -2091,12 +1951,11 @@
                     "type": "tidelift"
                 }
             ],
-            "install-path": "../symfony/polyfill-php81"
+            "time": "2024-09-09T11:45:10+00:00"
         },
         {
             "name": "twig/twig",
             "version": "v3.19.0",
-            "version_normalized": "3.19.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
@@ -2120,9 +1979,7 @@
                 "psr/container": "^1.0|^2.0",
                 "symfony/phpunit-bridge": "^5.4.9|^6.4|^7.0"
             },
-            "time": "2025-01-29T07:06:14+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "files": [
                     "src/Resources/core.php",
@@ -2174,11 +2031,73 @@
                     "type": "tidelift"
                 }
             ],
-            "install-path": "../twig/twig"
+            "time": "2025-01-29T07:06:14+00:00"
         }
     ],
-    "dev": true,
-    "dev-package-names": [
-        "phpstan/phpstan"
-    ]
+    "packages-dev": [
+        {
+            "name": "phpstan/phpstan",
+            "version": "1.12.32",
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/2770dcdf5078d0b0d53f94317e06affe88419aa8",
+                "reference": "2770dcdf5078d0b0d53f94317e06affe88419aa8",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2|^8.0"
+            },
+            "conflict": {
+                "phpstan/phpstan-shim": "*"
+            },
+            "bin": [
+                "phpstan",
+                "phpstan.phar"
+            ],
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPStan - PHP Static Analysis Tool",
+            "keywords": [
+                "dev",
+                "static analysis"
+            ],
+            "support": {
+                "docs": "https://phpstan.org/user-guide/getting-started",
+                "forum": "https://github.com/phpstan/phpstan/discussions",
+                "issues": "https://github.com/phpstan/phpstan/issues",
+                "security": "https://github.com/phpstan/phpstan/security/policy",
+                "source": "https://github.com/phpstan/phpstan-src"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ondrejmirtes",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/phpstan",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-09-30T10:16:31+00:00"
+        }
+    ],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": {},
+    "prefer-stable": true,
+    "prefer-lowest": false,
+    "platform": {
+        "php": ">=7.4",
+        "ext-json": "*"
+    },
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
 }

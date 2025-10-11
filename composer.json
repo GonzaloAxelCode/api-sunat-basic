@@ -22,7 +22,8 @@
         "greenter/lite": "^5.0",
         "greenter/report": "^5.0",
         "greenter/htmltopdf": "^5.0",
-        "greenter/data": "^5.0"
+        "greenter/data": "^5.0",
+        "aws/aws-sdk-php": "^3.337"
     },
     "require-dev": {
         "phpstan/phpstan": "^1.9"

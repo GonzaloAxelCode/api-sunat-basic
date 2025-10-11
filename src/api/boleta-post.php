@@ -1,53 +1,45 @@
 <?php
 
 declare(strict_types=1);
-
-header("Content-Type: application/json"); // La respuesta será JSON
+header("Content-Type: application/json");
 require 'domain.php';
+require __DIR__ . '/r2_client.php'; // ✅ Nuevo
 
 use Greenter\Model\Client\Client;
 use Greenter\Model\Sale\Invoice;
 use Greenter\Model\Sale\SaleDetail;
 use Greenter\Model\Sale\Legend;
 use Greenter\Ws\Services\SunatEndpoints;
+use Aws\Exception\AwsException;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
 $util = Util::getInstance();
 
-// URL base para los archivos generados (CAMBIAR EN PRODUCCIÓN)
-$baseUrl = $domain . "/public/boletas/";
-
-// Leer el JSON de la solicitud POST
 $json = file_get_contents("php://input");
 $data = json_decode($json, true);
 
 if (!$data) {
-    http_response_code(400); // Código 400: Bad Request
+    http_response_code(400);
     echo json_encode(["success" => false, "message" => "JSON inválido"]);
     exit();
 }
 
-// Crear el cliente
 $clientData = $data['cliente'] ?? [];
-$client = new Client();
-$client->setTipoDoc($clientData['tipoDoc'] ?? '1') // DNI por defecto
+$client = (new Client())
+    ->setTipoDoc($clientData['tipoDoc'] ?? '1')
     ->setNumDoc($clientData['numDoc'] ?? '00000000')
     ->setRznSocial($clientData['nombre'] ?? 'Cliente Genérico');
 
-// Crear la boleta electrónica
-$invoice = new Invoice();
-$invoice
+$invoice = (new Invoice())
     ->setUblVersion('2.1')
     ->setTipoOperacion('0101')
-    ->setTipoDoc('03') // 03 es Boleta
+    ->setTipoDoc('03')
     ->setSerie($data['serie'] ?? 'B001')
     ->setCorrelativo($data['correlativo'] ?? '123')
     ->setFechaEmision(new DateTime())
     ->setTipoMoneda($data['moneda'] ?? 'PEN')
-
     ->setCompany($util->getGRECompany())
-
     ->setClient($client)
     ->setMtoOperGravadas($data['gravadas'] ?? 200)
     ->setMtoIGV($data['igv'] ?? 36)
@@ -56,7 +48,6 @@ $invoice
     ->setSubTotal($data['subTotal'] ?? 336)
     ->setMtoImpVenta($data['total'] ?? 336);
 
-// Agregar los ítems de la boleta
 $items = [];
 foreach ($data['items'] as $item) {
     $detalle = (new SaleDetail())
@@ -75,20 +66,15 @@ foreach ($data['items'] as $item) {
 
     $items[] = $detalle;
 }
+
 $invoice->setDetails($items)
-    ->setLegends([
-        (new Legend())->setCode('1000')->setValue($data['leyenda'] ?? 'Monto en letras')
-    ]);
+    ->setLegends([(new Legend())->setCode('1000')->setValue($data['leyenda'] ?? 'Monto en letras')]);
 
-// Enviar a SUNAT
-
-//camvio
 $see = $util->getSee(SunatEndpoints::FE_BETA);
 $res = $see->send($invoice);
 
-// Si la boleta no fue aceptada, devolver error
 if (!$res->isSuccess()) {
-    http_response_code(500); // Código 500: Error interno del servidor
+    http_response_code(500);
     echo json_encode([
         "success" => false,
         "message" => "Error al enviar la boleta",
@@ -97,71 +83,55 @@ if (!$res->isSuccess()) {
     exit();
 }
 
-/**@var $res \Greenter\Model\Response\BillResult */
 $cdr = $res->getCdrResponse();
 
-// Definir rutas de almacenamiento
-$xmlFilename = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.xml";
-$pdfFilename = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.pdf";
-$cdrFilename = "R-{$invoice->getSerie()}-{$invoice->getCorrelativo()}.zip";
-$ticketFilename = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}-ticket.pdf";
+// ✅ Crear archivos en memoria
+$xmlContent = $see->getFactory()->getLastXml();
+$cdrContent = $res->getCdrZip();
+$pdfContent = $util->getPdf($invoice, "a4");
+$ticketContent = $util->getPdf($invoice, "ticket");
 
-// Directorios de almacenamiento
-$xmlPath = __DIR__ . "/../../public/boletas/xml/" . $xmlFilename;
-$pdfPath = __DIR__ . "/../../public/boletas/pdf/" . $pdfFilename;
-$cdrPath = __DIR__ . "/../../public/boletas/cdr/" . $cdrFilename;
-$ticketPath = __DIR__ . "/../../public/boletas/pdf/" . $ticketFilename;
+// ✅ Subir directamente a R2
+$r2 = r2Client();
 
-// Crear directorios si no existen
-foreach ([$xmlPath, $pdfPath, $cdrPath, $ticketPath] as $path) {
-    if (!is_dir(dirname($path))) {
-        mkdir(dirname($path), 0777, true);
+function subirR2($r2, $bucket, $key, $body, $contentType = 'application/octet-stream')
+{
+    try {
+        $r2->putObject([
+            'Bucket' => $bucket,
+            'Key' => $key,
+            'Body' => $body,
+            'ACL' => 'private', // o 'public-read' si deseas acceso directo
+            'ContentType' => $contentType,
+        ]);
+        return true;
+    } catch (AwsException $e) {
+        error_log('Error R2: ' . $e->getMessage());
+        return false;
     }
 }
 
-// Guardar el XML en el servidor
-file_put_contents($xmlPath, $see->getFactory()->getLastXml());
-file_put_contents($cdrPath, $res->getCdrZip()); // Guardar el CDR.zip
+// ✅ Nombres y rutas
+$xmlName = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.xml";
+$pdfName = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.pdf";
+$cdrName = "R-{$invoice->getSerie()}-{$invoice->getCorrelativo()}.zip";
+$ticketName = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}-ticket.pdf";
 
-// Generar el PDF normal de la boleta
-try {
-    $pdf = $util->getPdf($invoice, "a4");
-    file_put_contents($pdfPath, $pdf);
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode([
-        "success" => false,
-        "message" => "Error al generar el PDF",
-        "error" => $e->getMessage()
-    ]);
-    exit();
-}
+subirR2($r2, R2_BUCKET, "xml/{$xmlName}", $xmlContent, 'application/xml');
+subirR2($r2, R2_BUCKET, "pdf/{$pdfName}", $pdfContent, 'application/pdf');
+subirR2($r2, R2_BUCKET, "cdr/{$cdrName}", $cdrContent, 'application/zip');
+subirR2($r2, R2_BUCKET, "ticket/{$ticketName}", $ticketContent, 'application/pdf');
 
-// Generar el Ticket (PDF más pequeño para impresora térmica)
-try {
-    $ticketPdf = $util->getPdf($invoice, 'ticket');
-    file_put_contents($ticketPath, $ticketPdf);
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode([
-        "success" => false,
-        "message" => "Error al generar el ticket",
-        "error" => $e->getMessage()
-    ]);
-    exit();
-}
+// ✅ Construir URLs públicas (si el bucket es público)
+$xmlUrl = R2_BASE_URL . "/xml/{$xmlName}";
+$pdfUrl = R2_BASE_URL . "/pdf/{$pdfName}";
+$cdrUrl = R2_BASE_URL . "/cdr/{$cdrName}";
+$ticketUrl = R2_BASE_URL . "/ticket/{$ticketName}";
 
-// Construir las URLs accesibles
-$xmlUrl = $baseUrl . "xml/" . $xmlFilename;
-$pdfUrl = $baseUrl . "pdf/" . $pdfFilename;
-$cdrUrl = $baseUrl . "cdr/" . $cdrFilename;
-$ticketUrl = $baseUrl . "pdf/" . $ticketFilename;
-
-// Responder con los datos generados
-http_response_code(200); // Código 200: OK
+http_response_code(200);
 echo json_encode([
     "success" => true,
-    "message" => "Boleta procesada con éxito",
+    "message" => "Boleta procesada con éxito y subida a R2",
     "boleta_id" => $invoice->getSerie() . '-' . $invoice->getCorrelativo(),
     "cdr_codigo" => $cdr->getCode(),
     "cdr_descripcion" => $cdr->getDescription(),
@@ -169,5 +139,5 @@ echo json_encode([
     "xml_url" => $xmlUrl,
     "pdf_url" => $pdfUrl,
     "cdr_url" => $cdrUrl,
-    "ticket_url" => $ticketUrl // URL del ticket
+    "ticket_url" => $ticketUrl
 ], JSON_PRETTY_PRINT);
