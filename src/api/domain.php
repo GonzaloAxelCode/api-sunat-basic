@@ -1,3 +1,3 @@
 <?php
 
-$domain = "http://174.138.55.7";
+$domain = "https://inventarioaxel.wuaze.com/api-sunat-basic";
