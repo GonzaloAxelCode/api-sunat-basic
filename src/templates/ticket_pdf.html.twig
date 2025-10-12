@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
+    <title>Factura {{ invoice.serie }}-{{ invoice.correlativo }}</title>
     <style>
         * {
             margin: 0;
@@ -254,29 +255,25 @@
     </style>
 </head>
 <body>
-    {% set cp = doc.company %}
-    {% set cl = doc.client %}
-    {% set moneda = doc.tipoMoneda|catalog('02') %}
-    {% set name = doc.tipoDoc|catalog('01') %}
-
     <div class="container">
         <!-- HEADER -->
         <div class="header">
             <div class="company-section">
                 <div class="company-logo">
-                    <img src="{{ params.system.logo|image_b64 }}" height="60">
+                    {% if invoice.company.logo %}
+                    <img src="{{ invoice.company.logo }}" height="60" alt="Logo">
+                    {% endif %}
                 </div>
-                <div class="company-name">{{ cp.razonSocial }}</div>
+                <div class="company-name">{{ invoice.company.razonSocial }}</div>
                 <div class="company-details">
-                    {{ cp.address.direccion }}<br>
-                    {% if params.user.header is defined %}{{ params.user.header|raw }}{% endif %}
+                    {{ invoice.company.address.direccion|default('') }}
                 </div>
             </div>
             <div class="document-box">
-                <div class="ruc-text">RUC {{ cp.ruc }}</div>
-                <div class="document-type">{{ name|upper }}</div>
+                <div class="ruc-text">RUC {{ invoice.company.ruc }}</div>
+                <div class="document-type">FACTURA</div>
                 <div class="document-type">ELECTRÓNICA</div>
-                <div class="document-number">{{ doc.serie }}-{{ doc.correlativo }}</div>
+                <div class="document-number">{{ invoice.serie }}-{{ invoice.correlativo }}</div>
             </div>
         </div>
 
@@ -285,28 +282,28 @@
             <div class="client-title">DATOS DEL CLIENTE</div>
             <div class="client-grid">
                 <div class="client-row">
-                    <span class="client-label">RUC:</span>
-                    <span class="client-value">{{ cl.numDoc }}</span>
+                    <span class="client-label">{{ invoice.client.tipoDoc }}:</span>
+                    <span class="client-value">{{ invoice.client.numDoc }}</span>
                 </div>
                 <div class="client-row">
                     <span class="client-label">FECHA EMISIÓN:</span>
-                    <span class="client-value">{{ doc.fechaEmision|date('d/m/Y') }}</span>
+                    <span class="client-value">{{ invoice.fechaEmision|date('d/m/Y') }}</span>
                 </div>
                 <div class="client-row">
                     <span class="client-label">DENOMINACIÓN:</span>
-                    <span class="client-value">{{ cl.rznSocial }}</span>
+                    <span class="client-value">{{ invoice.client.rznSocial }}</span>
                 </div>
                 <div class="client-row">
-                    <span class="client-label">FECHA DE VENC.:</span>
-                    <span class="client-value">{{ doc.fechaEmision|date('d/m/Y') }}</span>
+                    <span class="client-label">TELÉFONO:</span>
+                    <span class="client-value">{{ invoice.client.telephone|default('---') }}</span>
                 </div>
                 <div class="client-row full-width">
                     <span class="client-label">DIRECCIÓN:</span>
-                    <span class="client-value">{% if cl.address %}{{ cl.address.direccion }}{% else %}---{% endif %}</span>
+                    <span class="client-value">{{ invoice.client.address.direccion|default('---') }}</span>
                 </div>
                 <div class="client-row">
                     <span class="client-label">MONEDA:</span>
-                    <span class="client-value">{{ moneda }}</span>
+                    <span class="client-value">{{ invoice.tipoMoneda }}</span>
                 </div>
             </div>
         </div>
@@ -325,64 +322,58 @@
                 </tr>
             </thead>
             <tbody>
-                {% for det in doc.details %}
+                {% for item in invoice.details %}
                 <tr>
-                    <td>{{ det.cantidad|n_format }}</td>
-                    <td>{{ det.unidad|catalog('03') }}</td>
-                    <td>{{ det.codProducto|default('001') }}</td>
-                    <td class="text-left">{{ det.descripcion }}</td>
-                    <td class="text-right">{{ det.mtoValorUnitario|n_format }}</td>
-                    <td class="text-right">{{ det.mtoPrecioUnitario|n_format }}</td>
-                    <td class="text-right">{{ det.mtoValorVenta|n_format }}</td>
+                    <td>{{ item.cantidad|number_format(2, '.', ',') }}</td>
+                    <td>{{ item.unidad }}</td>
+                    <td>{{ item.codProducto }}</td>
+                    <td class="text-left">{{ item.descripcion }}</td>
+                    <td class="text-right">{{ item.mtoValorUnitario|number_format(2, '.', ',') }}</td>
+                    <td class="text-right">{{ item.mtoPrecioUnitario|number_format(2, '.', ',') }}</td>
+                    <td class="text-right">{{ (item.mtoValorVenta + item.igv)|number_format(2, '.', ',') }}</td>
                 </tr>
                 {% endfor %}
-                {% for i in range(doc.details|length, 10) %}
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                {% endfor %}
+                {% set itemCount = invoice.details|length %}
+                {% if itemCount < 10 %}
+                    {% for i in range(itemCount, 10) %}
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
             </tbody>
         </table>
 
         <!-- TOTALS -->
         <div class="totals-section">
             <table class="totals-table">
-                {% if doc.mtoOperGravadas %}
                 <tr>
-                    <td>GRAVADA</td>
-                    <td>{{ moneda }}</td>
-                    <td>{{ doc.mtoOperGravadas|n_format }}</td>
+                    <td>SUBTOTAL</td>
+                    <td>{{ invoice.tipoMoneda }}</td>
+                    <td>{{ invoice.subTotal|default(0)|number_format(2, '.', ',') }}</td>
                 </tr>
-                {% endif %}
-                {% if doc.mtoOperExoneradas %}
-                <tr>
-                    <td>EXONERADA</td>
-                    <td>{{ moneda }}</td>
-                    <td>{{ doc.mtoOperExoneradas|n_format }}</td>
-                </tr>
-                {% endif %}
                 <tr>
                     <td>IGV 18.00 %</td>
-                    <td>{{ moneda }}</td>
-                    <td>{{ doc.mtoIGV|n_format }}</td>
+                    <td>{{ invoice.tipoMoneda }}</td>
+                    <td>{{ invoice.mtoIGV|default(0)|number_format(2, '.', ',') }}</td>
                 </tr>
                 <tr>
                     <td>TOTAL</td>
-                    <td>{{ moneda }}</td>
-                    <td>{{ doc.mtoImpVenta|n_format }}</td>
+                    <td>{{ invoice.tipoMoneda }}</td>
+                    <td>{{ invoice.mtoImpVenta|default(0)|number_format(2, '.', ',') }}</td>
                 </tr>
             </table>
         </div>
 
         <!-- AMOUNT IN WORDS -->
         <div class="amount-words">
-            <strong>IMPORTE EN LETRAS:</strong> {{ legend(doc.legends, '1000') }}
+            <strong>IMPORTE EN LETRAS:</strong> {{ invoice.legends[0].value|default('') }}
         </div>
 
         <!-- TRANSFER GUIDE -->
@@ -394,14 +385,16 @@
         <div class="footer">
             <div class="footer-content">
                 <div class="footer-left">
-                    <strong>Representación impresa de la {{ name|upper }} ELECTRÓNICA, visita {{ params.user.website|default('www.sunat.gob.pe') }}</strong><br>
-                    <strong>Autorizado mediante Resolución de Intendencia No 034-005-0005315</strong><br>
-                    {% if params.system.hash is defined and params.system.hash %}
-                    <strong>Resumen:</strong> <span class="hash-text">{{ params.system.hash }}</span>
+                    <strong>Representación impresa de la FACTURA ELECTRÓNICA</strong><br>
+                    <strong>Gracias por su preferencia. Este documento es una representación impresa de la factura electrónica.</strong><br>
+                    {% if invoice.hash %}
+                    <strong>Hash:</strong> <span class="hash-text">{{ invoice.hash }}</span>
                     {% endif %}
                 </div>
                 <div class="qr-section">
-                    <img class="qr-code" src="{{ qrCode(doc)|image_b64('svg+xml') }}" width="120">
+                    {% if invoice.qr %}
+                    <img class="qr-code" src="{{ invoice.qr }}" width="120" alt="QR Code">
+                    {% endif %}
                 </div>
             </div>
         </div>
