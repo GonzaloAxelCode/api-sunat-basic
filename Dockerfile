@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxext6 \
     libjpeg62-turbo \
     libzip-dev \
+    libxml2-dev \
     git \
     unzip \
     curl \
@@ -21,11 +22,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ENV DOCKER=1
 
-# Copiar archivos
+# Copiar archivos de configuración
 COPY docker/config/opcache.ini $PHP_INI_DIR/conf.d/
+
+# Copiar proyecto
 COPY . /var/www/html/
 
-# Instalar composer
+# Instalar composer y dependencias del proyecto
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     cd /var/www/html && \
     mkdir -p cache files && chmod -R 777 cache files && \
