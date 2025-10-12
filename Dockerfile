@@ -1,4 +1,5 @@
-FROM php:8.2-cli-bullseye
+
+FROM php:8.2.12-cli-bullseye
 
 LABEL owner="Giancarlos Salas"
 LABEL maintainer="giansalex@gmail.com"
@@ -32,7 +33,8 @@ COPY . /var/www/html/
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     cd /var/www/html && \
     mkdir -p cache files && chmod -R 777 cache files && \
-    composer install --no-interaction --no-dev -o -a
+    composer install --no-interaction --no-dev -o -a --ignore-platform-reqs
+
 
 WORKDIR /var/www/html
 
