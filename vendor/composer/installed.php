@@ -3,11 +3,11 @@
         'name' => 'greenter/demo',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '712cddda82175a0255b50afcba3a46491a259f9e',
+        'reference' => 'bf187e0d892154c821e8291475d8d6c232f97575',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'dev' => false,
+        'dev' => true,
     ),
     'versions' => array(
         'aws/aws-crt-php' => array(
@@ -67,7 +67,7 @@
         'greenter/demo' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '712cddda82175a0255b50afcba3a46491a259f9e',
+            'reference' => 'bf187e0d892154c821e8291475d8d6c232f97575',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -207,6 +207,15 @@
             'install_path' => __DIR__ . '/../nelexa/zip',
             'aliases' => array(),
             'dev_requirement' => false,
+        ),
+        'phpstan/phpstan' => array(
+            'pretty_version' => '1.12.32',
+            'version' => '1.12.32.0',
+            'reference' => '2770dcdf5078d0b0d53f94317e06affe88419aa8',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpstan/phpstan',
+            'aliases' => array(),
+            'dev_requirement' => true,
         ),
         'psr/http-client' => array(
             'pretty_version' => '1.0.3',

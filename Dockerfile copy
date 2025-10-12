@@ -5,18 +5,8 @@ LABEL owner="Giancarlos Salas"
 LABEL maintainer="giansalex@gmail.com"
 
 # Install deps
-# Install deps
-RUN apk update && apk add --no-cache \
-    fontconfig \
-    libxrender \
-    libxext \
-    libjpeg-turbo \
-    libzip-dev \
-    ttf-freefont \
-    wget && \
-    wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.alpine3.14-x86_64.apk && \
-    apk add --allow-untrusted wkhtmltox-0.12.6-1.alpine3.14-x86_64.apk && \
-    rm wkhtmltox-0.12.6-1.alpine3.14-x86_64.apk
+RUN apk update && apk add --no-cache wkhtmltopdf ttf-droid libzip
+
 # Install php dev dependencies
 RUN apk add --no-cache --virtual .build-green-deps \
     git \
