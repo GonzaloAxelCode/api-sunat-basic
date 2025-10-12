@@ -1,58 +1,42 @@
-# Imagen base PHP 8.2 con Alpine
+#FROM php:7.4-alpine3.13
 FROM php:8.2-alpine
 
 LABEL owner="Giancarlos Salas"
 LABEL maintainer="giansalex@gmail.com"
 
-# ================================
-# Instalar dependencias del sistema
-# ================================
-RUN apk update && apk add --no-cache \
-    wkhtmltopdf \
-    ttf-freefont \
-    fontconfig \
-    libxrender \
-    libxext \
-    libjpeg-turbo \
-    libpng \
-    libstdc++ \
-    ca-certificates \
-    libzip \
-    curl \
+# Install deps
+RUN apk update && apk add --no-cache wkhtmltopdf ttf-droid libzip
+
+# Install php dev dependencies
+RUN apk add --no-cache --virtual .build-green-deps \
     git \
     unzip \
+    curl \
     libxml2-dev
 
-# ================================
-# Extensiones PHP necesarias
-# ================================
+# Configure php extensions
 RUN docker-php-ext-install soap && \
     docker-php-ext-configure opcache --enable-opcache && \
-    docker-php-ext-install opcache zip
+    docker-php-ext-install opcache
 
-# ================================
-# Configuración
-# ================================
-ENV DOCKER=1
-WORKDIR /var/www/html
+ENV DOCKER 1
 
-COPY docker/config/opcache.ini $PHP_INI_DIR/conf.d/ 2>/dev/null || true
+COPY docker/config/opcache.ini $PHP_INI_DIR/conf.d/
+
 COPY . /var/www/html/
 
-# ================================
-# Instalar Composer + dependencias
-# ================================
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-    mkdir -p cache files && chmod -R 777 cache files && \
-    composer install --no-dev -o -a
+# Install Packages
+RUN curl --silent --show-error -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    cd /var/www/html && \
+    mkdir ./cache && chmod -R 777 ./cache && \
+    mkdir ./files && chmod -R 777 ./files && \
+    composer install --no-interaction --no-dev -o -a
 
-# ================================
-# Limpieza final
-# ================================
-RUN rm -rf /var/cache/apk/* /tmp/*
+RUN apk del .build-green-deps && \
+    rm -rf /var/cache/apk/*
 
-# ================================
-# Exponer puerto y ejecutar PHP
-# ================================
+WORKDIR /var/www/html
+
 EXPOSE 8000
-ENTRYPOINT ["php", "-S", "0.0.0.0:8000", "-t", "src"]
+
+ENTRYPOINT ["php", "-S", "0.0.0.0:8000"]
