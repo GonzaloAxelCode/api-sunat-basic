@@ -88,12 +88,12 @@ final class Util
             ->setRazonSocial('SILVA ESPINOZA WALTER FREDDY')
             ->setNombreComercial('MOVIL AXEL')
             ->setAddress((new \Greenter\Model\Company\Address())
-                ->setUbigueo('150101') // Código de distrito (ejemplo Lima)
+                ->setUbigueo('15121 ') // Código de distrito (ejemplo Lima)
                 ->setDepartamento('LIMA')
                 ->setProvincia('LIMA')
                 ->setDistrito('LIMA')
                 ->setUrbanizacion('-')
-                ->setDireccion('Av san Lorenzo 202 las vegas  puente piedra'));
+                ->setDireccion('Av san Lorenzo 202 Las Vegas  Puente Piedra'));
     }
 
 
@@ -251,10 +251,10 @@ HTML;
             ],
             'user' => [
                 'resolucion' => '212321',
-                'header' => 'Telf: <b>(056) 123375</b>',
+                'header' => 'Telf: <b>(+51) 934 545 535</b>',
                 'extras' => [
                     ['name' => 'FORMA DE PAGO', 'value' => 'Contado'],
-                    ['name' => 'VENDEDOR', 'value' => 'GITHUB SELLER'],
+                    ['name' => 'VENDEDOR', 'value' => 'Movil Axel'],
                 ],
             ]
         ];

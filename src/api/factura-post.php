@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 header("Content-Type: application/json"); // Indicar que la respuesta será JSON
+require 'domain.php';
 
 use Greenter\Model\Client\Client;
 use Greenter\Model\Company\Address;

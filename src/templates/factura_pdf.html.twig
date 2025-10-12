@@ -4,176 +4,400 @@
     <meta charset="UTF-8">
     <title>Factura {{ invoice.serie }}-{{ invoice.correlativo }}</title>
     <style>
-        /* General */
-        body {
-            font-family: "Helvetica", Arial, sans-serif;
-            font-size: 12px;
-            color: #333;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
-        .container {
+        
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            color: #000;
+            background: #fff;
             padding: 20px;
-            width: 100%;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            border: 2px solid #000;
+            padding: 15px;
         }
 
         /* Header */
         .header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #000;
+            align-items: flex-start;
+            margin-bottom: 15px;
             padding-bottom: 10px;
         }
-        .company {
-            font-weight: bold;
+
+        .company-section {
+            flex: 1;
+            padding-right: 20px;
+        }
+
+        .company-logo {
+            margin-bottom: 8px;
+        }
+
+        .company-name {
             font-size: 16px;
-        }
-        .company-info {
-            font-size: 12px;
-            color: #555;
-        }
-        .invoice-title {
-            font-size: 24px;
             font-weight: bold;
-            color: #2c3e50;
+            color: #000;
+            margin-bottom: 5px;
         }
 
-        /* Cliente */
-        .client-info {
-            margin-bottom: 20px;
-        }
-        .client-info h4 {
-            margin: 0;
-            font-size: 14px;
-        }
-        .client-info p {
-            margin: 2px 0;
-            font-size: 12px;
+        .company-details {
+            font-size: 9px;
+            line-height: 1.5;
+            color: #000;
         }
 
-        /* Tabla de items */
-        table {
+        /* Document Box */
+        .document-box {
+            border: 2px solid #000;
+            padding: 12px 20px;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        .ruc-text {
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .document-type {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .document-number {
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        /* Client Info Box */
+        .client-box {
+            border: 2px solid #000;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .client-title {
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: #f0f0f0;
+            padding: 3px 5px;
+        }
+
+        .client-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .client-row {
+            display: flex;
+            gap: 5px;
+            font-size: 9px;
+        }
+
+        .client-row.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .client-label {
+            font-weight: bold;
+            min-width: 100px;
+        }
+
+        .client-value {
+            flex: 1;
+        }
+
+        /* Items Table */
+        .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table th, table td {
-            border: 1px solid #ccc;
-            padding: 6px;
-            text-align: left;
-        }
-        table th {
-            background-color: #f5f5f5;
+            margin-bottom: 15px;
+            font-size: 9px;
         }
 
-        /* Totales */
-        .totals {
+        .items-table thead {
+            background: #f0f0f0;
+        }
+
+        .items-table th {
+            padding: 6px 5px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #000;
+        }
+
+        .items-table td {
+            padding: 6px 5px;
+            border: 1px solid #000;
+            text-align: center;
+        }
+
+        .items-table td.text-left {
+            text-align: left;
+        }
+
+        .items-table td.text-right {
+            text-align: right;
+        }
+
+        /* Totals Section */
+        .totals-section {
             display: flex;
             justify-content: flex-end;
+            margin-bottom: 15px;
         }
-        .totals table {
-            width: 300px;
+
+        .totals-table {
+            border: 2px solid #000;
+            font-size: 10px;
+            min-width: 300px;
         }
-        .totals table td {
-            border: none;
-            padding: 4px 6px;
+
+        .totals-table td {
+            padding: 5px 10px;
+            border-bottom: 1px solid #000;
         }
-        .totals table tr.total td {
+
+        .totals-table tr:last-child td {
+            border-bottom: none;
             font-weight: bold;
-            border-top: 2px solid #000;
+            font-size: 11px;
+        }
+
+        .totals-table td:first-child {
+            text-align: left;
+        }
+
+        .totals-table td:nth-child(2) {
+            text-align: center;
+            width: 50px;
+        }
+
+        .totals-table td:last-child {
+            text-align: right;
+            width: 100px;
+        }
+
+        /* Amount in words */
+        .amount-words {
+            border: 1px solid #000;
+            padding: 8px;
+            margin-bottom: 15px;
+            font-size: 9px;
+        }
+
+        .amount-words strong {
+            font-weight: bold;
+        }
+
+        /* Transfer Guide */
+        .transfer-section {
+            border: 1px solid #000;
+            padding: 8px;
+            margin-bottom: 15px;
+            font-size: 9px;
+            text-align: center;
         }
 
         /* Footer */
         .footer {
-            margin-top: 30px;
-            font-size: 10px;
+            border-top: 2px solid #000;
+            padding-top: 10px;
+        }
+
+        .footer-content {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .footer-left {
+            flex: 1;
+            font-size: 8px;
+            line-height: 1.5;
+        }
+
+        .footer-left strong {
+            font-weight: bold;
+        }
+
+        .hash-text {
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 7px;
+        }
+
+        .qr-section {
             text-align: center;
-            color: #777;
+        }
+
+        .qr-code {
+            border: 1px solid #000;
+            padding: 5px;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <!-- Header -->
-    <div class="header">
-        <div class="company">
-            {{ invoice.company.razonSocial }}
-            <div class="company-info">
-                RUC: {{ invoice.company.ruc }}<br>
-                {{ invoice.company.address.direccion|default('') }}
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="company-section">
+                <div class="company-logo">
+                    {% if invoice.company.logo %}
+                    <img src="{{ invoice.company.logo }}" height="60" alt="Logo">
+                    {% endif %}
+                </div>
+                <div class="company-name">{{ invoice.company.razonSocial }}</div>
+                <div class="company-details">
+                    {{ invoice.company.address.direccion|default('') }}
+                </div>
+            </div>
+            <div class="document-box">
+                <div class="ruc-text">RUC {{ invoice.company.ruc }}</div>
+                <div class="document-type">FACTURA</div>
+                <div class="document-type">ELECTRÓNICA</div>
+                <div class="document-number">{{ invoice.serie }}-{{ invoice.correlativo }}</div>
             </div>
         </div>
-        <div class="invoice-title">
-            FACTURA<br>{{ invoice.serie }}-{{ invoice.correlativo }}
+
+        <!-- CLIENT INFO -->
+        <div class="client-box">
+            <div class="client-title">DATOS DEL CLIENTE</div>
+            <div class="client-grid">
+                <div class="client-row">
+                    <span class="client-label">{{ invoice.client.tipoDoc }}:</span>
+                    <span class="client-value">{{ invoice.client.numDoc }}</span>
+                </div>
+                <div class="client-row">
+                    <span class="client-label">FECHA EMISIÓN:</span>
+                    <span class="client-value">{{ invoice.fechaEmision|date('d/m/Y') }}</span>
+                </div>
+                <div class="client-row">
+                    <span class="client-label">DENOMINACIÓN:</span>
+                    <span class="client-value">{{ invoice.client.rznSocial }}</span>
+                </div>
+                <div class="client-row">
+                    <span class="client-label">TELÉFONO:</span>
+                    <span class="client-value">{{ invoice.client.telephone|default('---') }}</span>
+                </div>
+                <div class="client-row full-width">
+                    <span class="client-label">DIRECCIÓN:</span>
+                    <span class="client-value">{{ invoice.client.address.direccion|default('---') }}</span>
+                </div>
+                <div class="client-row">
+                    <span class="client-label">MONEDA:</span>
+                    <span class="client-value">{{ invoice.tipoMoneda }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ITEMS TABLE -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">CANT.</th>
+                    <th style="width: 50px;">U/M</th>
+                    <th style="width: 60px;">CÓD.</th>
+                    <th>DESCRIPCIÓN</th>
+                    <th style="width: 80px;">V/U</th>
+                    <th style="width: 80px;">P/U</th>
+                    <th style="width: 90px;">IMPORTE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in invoice.details %}
+                <tr>
+                    <td>{{ item.cantidad|number_format(2, '.', ',') }}</td>
+                    <td>{{ item.unidad }}</td>
+                    <td>{{ item.codProducto }}</td>
+                    <td class="text-left">{{ item.descripcion }}</td>
+                    <td class="text-right">{{ item.mtoValorUnitario|number_format(2, '.', ',') }}</td>
+                    <td class="text-right">{{ item.mtoPrecioUnitario|number_format(2, '.', ',') }}</td>
+                    <td class="text-right">{{ (item.mtoValorVenta + item.igv)|number_format(2, '.', ',') }}</td>
+                </tr>
+                {% endfor %}
+                {% set itemCount = invoice.details|length %}
+                {% if itemCount < 10 %}
+                    {% for i in range(itemCount, 10) %}
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+
+        <!-- TOTALS -->
+        <div class="totals-section">
+            <table class="totals-table">
+                <tr>
+                    <td>SUBTOTAL</td>
+                    <td>{{ invoice.tipoMoneda }}</td>
+                    <td>{{ invoice.subTotal|default(0)|number_format(2, '.', ',') }}</td>
+                </tr>
+                <tr>
+                    <td>IGV 18.00 %</td>
+                    <td>{{ invoice.tipoMoneda }}</td>
+                    <td>{{ invoice.mtoIGV|default(0)|number_format(2, '.', ',') }}</td>
+                </tr>
+                <tr>
+                    <td>TOTAL</td>
+                    <td>{{ invoice.tipoMoneda }}</td>
+                    <td>{{ invoice.mtoImpVenta|default(0)|number_format(2, '.', ',') }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- AMOUNT IN WORDS -->
+        <div class="amount-words">
+            <strong>IMPORTE EN LETRAS:</strong> {{ invoice.legends[0].value|default('') }}
+        </div>
+
+        <!-- TRANSFER GUIDE -->
+        <div class="transfer-section">
+            <strong>GUÍA DE REMISIÓN REMITENTE:</strong> ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-left">
+                    <strong>Representación impresa de la FACTURA ELECTRÓNICA</strong><br>
+                    <strong>Gracias por su preferencia. Este documento es una representación impresa de la factura electrónica.</strong><br>
+                    {% if invoice.hash %}
+                    <strong>Hash:</strong> <span class="hash-text">{{ invoice.hash }}</span>
+                    {% endif %}
+                </div>
+                <div class="qr-section">
+                    {% if invoice.qr %}
+                    <img class="qr-code" src="{{ invoice.qr }}" width="120" alt="QR Code">
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
-
-    <!-- Cliente -->
-    <div class="client-info">
-        <h4>Cliente:</h4>
-        <p>{{ invoice.client.rznSocial }}</p>
-        <p>{{ invoice.client.tipoDoc }}: {{ invoice.client.numDoc }}</p>
-        <p>Dirección: {{ invoice.client.address.direccion|default('') }}</p>
-        <p>Tel: {{ invoice.client.telephone|default('') }} | Email: {{ invoice.client.email|default('') }}</p>
-    </div>
-
-    <!-- Items -->
-    <table>
-        <thead>
-            <tr>
-                <th>Cod.</th>
-                <th>Descripción</th>
-                <th>Unidad</th>
-                <th>Cant.</th>
-                <th>Precio Unit.</th>
-                <th>Valor Venta</th>
-                <th>IGV</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for item in invoice.details %}
-            <tr>
-                <td>{{ item.codProducto }}</td>
-                <td>{{ item.descripcion }}</td>
-                <td>{{ item.unidad }}</td>
-                <td>{{ item.cantidad }}</td>
-                <td>{{ item.mtoPrecioUnitario|number_format(2, '.', ',') }}</td>
-                <td>{{ item.mtoValorVenta|number_format(2, '.', ',') }}</td>
-                <td>{{ item.igv|number_format(2, '.', ',') }}</td>
-                <td>{{ item.mtoValorVenta + item.igv|number_format(2, '.', ',') }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <!-- Totales -->
-    <div class="totals">
-        <table>
-            <tr>
-                <td>Subtotal:</td>
-                <td>{{ invoice.subTotal|default(0)|number_format(2, '.', ',') }}</td>
-            </tr>
-            <tr>
-                <td>IGV ({{ invoice.tipoMoneda }}):</td>
-                <td>{{ invoice.mtoIGV|default(0)|number_format(2, '.', ',') }}</td>
-            </tr>
-            <tr class="total">
-                <td>Total:</td>
-                <td>{{ invoice.mtoImpVenta|default(0)|number_format(2, '.', ',') }}</td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- Leyenda -->
-    <p><strong>Leyenda:</strong> {{ invoice.legends[0].value|default('') }}</p>
-
-    <!-- Footer -->
-    <div class="footer">
-        Gracias por su preferencia. Este documento es una representación impresa de la factura electrónica.
-    </div>
-</div>
 </body>
 </html>
