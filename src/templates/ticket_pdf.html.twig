@@ -10,291 +10,237 @@
         }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-size: 11px;
-            color: #1e293b;
-            background: #ffffff;
-            padding: 30px;
-            line-height: 1.6;
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            color: #000;
+            background: #fff;
+            padding: 20px;
+            line-height: 1.4;
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: #ffffff;
+            background: #fff;
+            border: 2px solid #000;
+            padding: 15px;
         }
 
-        /* Header moderno con gradiente sutil */
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            padding-bottom: 25px;
-            border-bottom: 3px solid #e2e8f0;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
         }
 
-        .company-info {
+        .company-section {
             flex: 1;
+            padding-right: 20px;
         }
 
         .company-logo {
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .company-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: #0f172a;
-            margin-bottom: 6px;
-            letter-spacing: -0.02em;
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 5px;
         }
 
         .company-details {
-            color: #64748b;
-            font-size: 10px;
-            line-height: 1.7;
+            font-size: 9px;
+            line-height: 1.5;
+            color: #000;
         }
 
-        .company-details strong {
-            color: #475569;
-            font-weight: 600;
-        }
-
-        /* Document box con diseño moderno */
+        /* Document Box */
         .document-box {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
+            border: 2px solid #000;
+            padding: 12px 20px;
             text-align: center;
             min-width: 200px;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+        }
+
+        .ruc-text {
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 3px;
         }
 
         .document-type {
             font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            opacity: 0.95;
-        }
-
-        .document-number {
-            font-size: 20px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        /* Secciones con diseño card */
-        .section {
-            margin-bottom: 25px;
-        }
-
-        .section-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: #0f172a;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #e2e8f0;
-        }
-
-        /* Info grid moderna */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            background: #f8fafc;
-            padding: 16px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .info-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .info-label {
-            font-size: 9px;
-            color: #64748b;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
+            font-weight: bold;
             margin-bottom: 3px;
         }
 
-        .info-value {
-            font-size: 11px;
-            color: #1e293b;
-            font-weight: 500;
+        .document-number {
+            font-size: 15px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
         }
 
-        /* Tabla moderna */
+        /* Client Info Box */
+        .client-box {
+            border: 2px solid #000;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .client-title {
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: #f0f0f0;
+            padding: 3px 5px;
+        }
+
+        .client-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .client-row {
+            display: flex;
+            gap: 5px;
+            font-size: 9px;
+        }
+
+        .client-row.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .client-label {
+            font-weight: bold;
+            min-width: 100px;
+        }
+
+        .client-value {
+            flex: 1;
+        }
+
+        /* Items Table */
         .items-table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            font-size: 9px;
         }
 
         .items-table thead {
-            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+            background: #f0f0f0;
         }
 
         .items-table th {
-            padding: 12px 10px;
-            text-align: left;
-            font-size: 10px;
-            font-weight: 700;
-            color: #475569;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .items-table tbody tr {
-            border-bottom: 1px solid #f1f5f9;
-            transition: background-color 0.2s;
-        }
-
-        .items-table tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        .items-table tbody tr:hover {
-            background-color: #f8fafc;
+            padding: 6px 5px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #000;
         }
 
         .items-table td {
-            padding: 12px 10px;
-            font-size: 10px;
-            color: #334155;
+            padding: 6px 5px;
+            border: 1px solid #000;
+            text-align: center;
         }
 
-        .items-table .text-right {
+        .items-table td.text-left {
+            text-align: left;
+        }
+
+        .items-table td.text-right {
             text-align: right;
-            font-weight: 600;
-            color: #1e293b;
         }
 
-        /* Totales con diseño destacado */
+        /* Totals Section */
         .totals-section {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
 
-        .totals-box {
-            min-width: 320px;
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 16px;
-            border: 1px solid #e2e8f0;
+        .totals-table {
+            border: 2px solid #000;
+            font-size: 10px;
+            min-width: 300px;
         }
 
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
+        .totals-table td {
+            padding: 5px 10px;
+            border-bottom: 1px solid #000;
+        }
+
+        .totals-table tr:last-child td {
+            border-bottom: none;
+            font-weight: bold;
             font-size: 11px;
         }
 
-        .total-row.separator {
-            border-top: 1px solid #e2e8f0;
-            margin-top: 4px;
-            padding-top: 12px;
+        .totals-table td:first-child {
+            text-align: left;
         }
 
-        .total-label {
-            color: #64748b;
-            font-weight: 600;
+        .totals-table td:nth-child(2) {
+            text-align: center;
+            width: 50px;
         }
 
-        .total-value {
-            color: #1e293b;
-            font-weight: 600;
+        .totals-table td:last-child {
             text-align: right;
+            width: 100px;
         }
 
-        .total-row.final {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-            margin: 8px -16px -16px -16px;
-            padding: 14px 16px;
-            border-radius: 0 0 8px 8px;
-        }
-
-        .total-row.final .total-label,
-        .total-row.final .total-value {
-            color: white;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        /* Leyenda moderna */
-        .legend-box {
-            background: #fefce8;
-            border-left: 4px solid #facc15;
-            padding: 12px 16px;
-            border-radius: 6px;
-            margin-bottom: 25px;
-        }
-
-        .legend-box strong {
-            color: #854d0e;
+        /* Amount in words */
+        .amount-words {
+            border: 1px solid #000;
+            padding: 8px;
+            margin-bottom: 15px;
             font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            margin-right: 8px;
         }
 
-        .legend-text {
-            color: #713f12;
-            font-size: 10px;
-            font-weight: 500;
+        .amount-words strong {
+            font-weight: bold;
         }
 
-        /* Footer moderno */
+        /* Transfer Guide */
+        .transfer-section {
+            border: 1px solid #000;
+            padding: 8px;
+            margin-bottom: 15px;
+            font-size: 9px;
+            text-align: center;
+        }
+
+        /* Footer */
         .footer {
-            margin-top: 35px;
-            padding-top: 20px;
-            border-top: 2px solid #e2e8f0;
+            border-top: 2px solid #000;
+            padding-top: 10px;
         }
 
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 20px;
-            align-items: center;
+        .footer-content {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
         }
 
-        .hash-section {
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .hash-label {
-            font-size: 9px;
-            color: #64748b;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .hash-value {
-            font-family: 'Courier New', monospace;
+        .footer-left {
+            flex: 1;
             font-size: 8px;
-            color: #475569;
+            line-height: 1.5;
+        }
+
+        .footer-left strong {
+            font-weight: bold;
+        }
+
+        .hash-text {
             word-break: break-all;
+            font-family: 'Courier New', monospace;
+            font-size: 7px;
         }
 
         .qr-section {
@@ -302,26 +248,8 @@
         }
 
         .qr-code {
-            margin-bottom: 8px;
-        }
-
-        .footer-text {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .footer-message {
-            color: #3b82f6;
-            font-weight: 600;
-            font-size: 11px;
-            margin-bottom: 4px;
-        }
-
-        .footer-legal {
-            color: #94a3b8;
-            font-size: 9px;
+            border: 1px solid #000;
+            padding: 5px;
         }
     </style>
 </head>
@@ -334,120 +262,147 @@
     <div class="container">
         <!-- HEADER -->
         <div class="header">
-            <div class="company-info">
+            <div class="company-section">
                 <div class="company-logo">
-                    <img src="{{ params.system.logo|image_b64 }}" height="50">
+                    <img src="{{ params.system.logo|image_b64 }}" height="60">
                 </div>
                 <div class="company-name">{{ cp.razonSocial }}</div>
                 <div class="company-details">
-                    <strong>RUC:</strong> {{ cp.ruc }}<br>
-                    <strong>Dirección:</strong> {{ cp.address.direccion }}<br>
+                    {{ cp.address.direccion }}<br>
                     {% if params.user.header is defined %}{{ params.user.header|raw }}{% endif %}
                 </div>
             </div>
             <div class="document-box">
-                <div class="document-type">{{ name }} Electrónica</div>
-                <div class="document-number">{{ doc.serie }} - {{ doc.correlativo }}</div>
+                <div class="ruc-text">RUC {{ cp.ruc }}</div>
+                <div class="document-type">{{ name|upper }}</div>
+                <div class="document-type">ELECTRÓNICA</div>
+                <div class="document-number">{{ doc.serie }}-{{ doc.correlativo }}</div>
             </div>
         </div>
 
-        <!-- INFORMACIÓN DEL CLIENTE -->
-        <div class="section">
-            <div class="section-title">Información del Cliente</div>
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">Cliente</div>
-                    <div class="info-value">{{ cl.rznSocial }}</div>
+        <!-- CLIENT INFO -->
+        <div class="client-box">
+            <div class="client-title">DATOS DEL CLIENTE</div>
+            <div class="client-grid">
+                <div class="client-row">
+                    <span class="client-label">RUC:</span>
+                    <span class="client-value">{{ cl.numDoc }}</span>
                 </div>
-                <div class="info-item">
-                    <div class="info-label">{{ cl.tipoDoc|catalog('06') }}</div>
-                    <div class="info-value">{{ cl.numDoc }}</div>
+                <div class="client-row">
+                    <span class="client-label">FECHA EMISIÓN:</span>
+                    <span class="client-value">{{ doc.fechaEmision|date('d/m/Y') }}</span>
                 </div>
-                <div class="info-item">
-                    <div class="info-label">Dirección</div>
-                    <div class="info-value">{% if cl.address %}{{ cl.address.direccion }}{% else %}---{% endif %}</div>
+                <div class="client-row">
+                    <span class="client-label">DENOMINACIÓN:</span>
+                    <span class="client-value">{{ cl.rznSocial }}</span>
                 </div>
-                <div class="info-item">
-                    <div class="info-label">Fecha de Emisión</div>
-                    <div class="info-value">{{ doc.fechaEmision|date('d/m/Y H:i') }}</div>
+                <div class="client-row">
+                    <span class="client-label">FECHA DE VENC.:</span>
+                    <span class="client-value">{{ doc.fechaEmision|date('d/m/Y') }}</span>
+                </div>
+                <div class="client-row full-width">
+                    <span class="client-label">DIRECCIÓN:</span>
+                    <span class="client-value">{% if cl.address %}{{ cl.address.direccion }}{% else %}---{% endif %}</span>
+                </div>
+                <div class="client-row">
+                    <span class="client-label">MONEDA:</span>
+                    <span class="client-value">{{ moneda }}</span>
                 </div>
             </div>
         </div>
 
-        <!-- DETALLE DE PRODUCTOS -->
-        <div class="section">
-            <div class="section-title">Detalle de la Venta</div>
-            <table class="items-table">
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">Cant.</th>
-                        <th>Descripción</th>
-                        <th style="width: 100px; text-align: right;">V. Unitario</th>
-                        <th style="width: 100px; text-align: right;">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for det in doc.details %}
-                    <tr>
-                        <td>{{ det.cantidad|n_format }}</td>
-                        <td>{{ det.descripcion }}</td>
-                        <td class="text-right">{{ moneda }} {{ det.mtoValorUnitario|n_format }}</td>
-                        <td class="text-right">{{ moneda }} {{ det.mtoValorVenta|n_format }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
+        <!-- ITEMS TABLE -->
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">CANT.</th>
+                    <th style="width: 50px;">U/M</th>
+                    <th style="width: 60px;">CÓD.</th>
+                    <th>DESCRIPCIÓN</th>
+                    <th style="width: 80px;">V/U</th>
+                    <th style="width: 80px;">P/U</th>
+                    <th style="width: 90px;">IMPORTE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for det in doc.details %}
+                <tr>
+                    <td>{{ det.cantidad|n_format }}</td>
+                    <td>{{ det.unidad|catalog('03') }}</td>
+                    <td>{{ det.codProducto|default('001') }}</td>
+                    <td class="text-left">{{ det.descripcion }}</td>
+                    <td class="text-right">{{ det.mtoValorUnitario|n_format }}</td>
+                    <td class="text-right">{{ det.mtoPrecioUnitario|n_format }}</td>
+                    <td class="text-right">{{ det.mtoValorVenta|n_format }}</td>
+                </tr>
+                {% endfor %}
+                {% for i in range(doc.details|length, 10) %}
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- TOTALS -->
+        <div class="totals-section">
+            <table class="totals-table">
+                {% if doc.mtoOperGravadas %}
+                <tr>
+                    <td>GRAVADA</td>
+                    <td>{{ moneda }}</td>
+                    <td>{{ doc.mtoOperGravadas|n_format }}</td>
+                </tr>
+                {% endif %}
+                {% if doc.mtoOperExoneradas %}
+                <tr>
+                    <td>EXONERADA</td>
+                    <td>{{ moneda }}</td>
+                    <td>{{ doc.mtoOperExoneradas|n_format }}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                    <td>IGV 18.00 %</td>
+                    <td>{{ moneda }}</td>
+                    <td>{{ doc.mtoIGV|n_format }}</td>
+                </tr>
+                <tr>
+                    <td>TOTAL</td>
+                    <td>{{ moneda }}</td>
+                    <td>{{ doc.mtoImpVenta|n_format }}</td>
+                </tr>
             </table>
         </div>
 
-        <!-- TOTALES -->
-        <div class="totals-section">
-            <div class="totals-box">
-                {% if doc.mtoOperGravadas %}
-                <div class="total-row">
-                    <div class="total-label">Op. Gravadas</div>
-                    <div class="total-value">{{ moneda }} {{ doc.mtoOperGravadas|n_format }}</div>
-                </div>
-                {% endif %}
-                {% if doc.mtoOperExoneradas %}
-                <div class="total-row">
-                    <div class="total-label">Op. Exoneradas</div>
-                    <div class="total-value">{{ moneda }} {{ doc.mtoOperExoneradas|n_format }}</div>
-                </div>
-                {% endif %}
-                <div class="total-row">
-                    <div class="total-label">IGV (18%)</div>
-                    <div class="total-value">{{ moneda }} {{ doc.mtoIGV|n_format }}</div>
-                </div>
-                <div class="total-row final">
-                    <div class="total-label">IMPORTE TOTAL</div>
-                    <div class="total-value">{{ moneda }} {{ doc.mtoImpVenta|n_format }}</div>
-                </div>
-            </div>
+        <!-- AMOUNT IN WORDS -->
+        <div class="amount-words">
+            <strong>IMPORTE EN LETRAS:</strong> {{ legend(doc.legends, '1000') }}
         </div>
 
-        <!-- LEYENDA -->
-        <div class="legend-box">
-            <strong>Son:</strong>
-            <span class="legend-text">{{ legend(doc.legends, '1000') }}</span>
+        <!-- TRANSFER GUIDE -->
+        <div class="transfer-section">
+            <strong>GUÍA DE REMISIÓN REMITENTE:</strong> ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )
         </div>
 
         <!-- FOOTER -->
         <div class="footer">
-            <div class="footer-grid">
-                {% if params.system.hash is defined and params.system.hash %}
-                <div class="hash-section">
-                    <div class="hash-label">Código Hash</div>
-                    <div class="hash-value">{{ params.system.hash }}</div>
+            <div class="footer-content">
+                <div class="footer-left">
+                    <strong>Representación impresa de la {{ name|upper }} ELECTRÓNICA, visita {{ params.user.website|default('www.sunat.gob.pe') }}</strong><br>
+                    <strong>Autorizado mediante Resolución de Intendencia No 034-005-0005315</strong><br>
+                    {% if params.system.hash is defined and params.system.hash %}
+                    <strong>Resumen:</strong> <span class="hash-text">{{ params.system.hash }}</span>
+                    {% endif %}
                 </div>
-                {% endif %}
                 <div class="qr-section">
-                    <img class="qr-code" src="{{ qrCode(doc)|image_b64('svg+xml') }}" width="100">
+                    <img class="qr-code" src="{{ qrCode(doc)|image_b64('svg+xml') }}" width="120">
                 </div>
-            </div>
-            
-            <div class="footer-text">
-                <div class="footer-message">¡Gracias por su compra!</div>
-                <div class="footer-legal">Representación impresa de la {{ name }} ELECTRÓNICA</div>
             </div>
         </div>
     </div>
