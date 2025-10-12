@@ -21,4 +21,4 @@ function r2Client(): S3Client
 
 const R2_BUCKET = 'axelmovilcomprobantes';
 
-const R2_BASE_URL = 'https://b6a94d41168d5138e642c8ee64103a44.r2.cloudflarestorage.com/axelmovilcomprobantes';
+const R2_BASE_URL = 'https://pub-6b79c76579594222bdd6f486ae49157e.r2.dev';
