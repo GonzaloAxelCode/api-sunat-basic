@@ -166,7 +166,11 @@ HTML;
         $hash = $this->getHash($document);
         $params = self::getParametersPdf();
         $params['system']['hash'] = $hash;
-        $params['user']['footer'] = '<div>consulte en <a href="https://github.com/giansalex/sufel">sufel.com</a></div>';
+        $params['user']['footer'] = '<div style="font-size:12px;text-align:left;">
+
+Emitido conforme a lo dispuesto en el Reglamento de Comprobantes de Pago - SUNAT.<br>
+Consulte la validez de este comprobante en: <a href="https://e-consulta.sunat.gob.pe" target="_blank">https://e-consulta.sunat.gob.pe</a>
+</div>';
 
 
         $pdf = $render->render($document, $params);
@@ -254,7 +258,7 @@ HTML;
                 'header' => 'Telf: <b>(+51) 934 545 535</b>',
                 'extras' => [
                     ['name' => 'FORMA DE PAGO', 'value' => 'Contado'],
-                    ['name' => 'VENDEDOR', 'value' => 'Movil Axel'],
+                    ['name' => 'VENDEDOR', 'value' => 'SILVAESPINOZAWALTER FREDDY'],
                 ],
             ]
         ];

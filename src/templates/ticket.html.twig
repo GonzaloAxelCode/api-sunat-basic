@@ -26,6 +26,7 @@
         .totals .value { text-align: right; width: 40%; }
         .footer { margin-top: 8px; font-size: 10px; }
         img.qr { margin-top: 6px; }
+        .pb{    margin-bottom: 10px;}
     </style>
 </head>
 <body>
@@ -33,9 +34,12 @@
     {% set cl = doc.client %}
     {% set moneda = doc.tipoMoneda|catalog('02') %}
     {% set name = doc.tipoDoc|catalog('01') %}
-
+<div height="130" align="center" class="p-b">
+                        <span><img src="{{ params.system.logo|image_b64 }}" height="130"  width="160" style="text-align:center" border="0"></span>
+                    </div>
     <!-- Encabezado Empresa -->
     <div class="center">
+                <div class="header p-b">{{ cp.nombreComercial }}</div>
         <div class="header">{{ cp.razonSocial }}</div>
         <div>RUC: {{ cp.ruc }}</div>
         <div>{{ cp.address.direccion }}</div>

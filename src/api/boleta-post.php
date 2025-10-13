@@ -110,23 +110,37 @@ function subirR2($r2, $bucket, $key, $body, $contentType = 'application/octet-st
         return false;
     }
 }
-
-// ✅ Nombres y rutas
+// ✅ Nombres y rutas base
 $xmlName = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.xml";
 $pdfName = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.pdf";
 $cdrName = "R-{$invoice->getSerie()}-{$invoice->getCorrelativo()}.zip";
 $ticketName = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}-ticket.pdf";
 
+// ✅ Detectar si estamos en BETA y agregar sufijo _beta
+$endpoint = SunatEndpoints::FE_BETA; // o FE_PROD según tu entorno
+$see = $util->getSee($endpoint);
+
+$isBeta = $endpoint === SunatEndpoints::FE_BETA;
+
+if ($isBeta) {
+    $xmlName = str_replace('.xml', '_beta.xml', $xmlName);
+    $pdfName = str_replace('.pdf', '_beta.pdf', $pdfName);
+    $cdrName = str_replace('.zip', '_beta.zip', $cdrName);
+    $ticketName = str_replace('.pdf', '_beta.pdf', $ticketName);
+}
+
+// ✅ Subir a R2
 subirR2($r2, R2_BUCKET, "xml/{$xmlName}", $xmlContent, 'application/xml');
 subirR2($r2, R2_BUCKET, "pdf/{$pdfName}", $pdfContent, 'application/pdf');
 subirR2($r2, R2_BUCKET, "cdr/{$cdrName}", $cdrContent, 'application/zip');
 subirR2($r2, R2_BUCKET, "ticket/{$ticketName}", $ticketContent, 'application/pdf');
 
-// ✅ Construir URLs públicas (si el bucket es público)
+// ✅ Construir URLs públicas
 $xmlUrl = R2_BASE_URL . "/xml/{$xmlName}";
 $pdfUrl = R2_BASE_URL . "/pdf/{$pdfName}";
 $cdrUrl = R2_BASE_URL . "/cdr/{$cdrName}";
 $ticketUrl = R2_BASE_URL . "/ticket/{$ticketName}";
+
 
 http_response_code(200);
 echo json_encode([
