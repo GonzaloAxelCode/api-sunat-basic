@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <style>
+        /* --- CONFIGURACIÓN PARA IMPRESORA TÉRMICA --- */
         @page {
-            size: A4;
-            margin: 20mm;
+            size: 80mm auto;  /* Rollo de impresora térmica */
+            margin: 0;
         }
 
         body {
             font-family: "Helvetica Neue", Arial, sans-serif;
-            font-size: 12px;
-            margin: 0;
-            width: 100%;
+            font-size: 11px;
+            width: 78mm;  /* Ancho real del ticket */
+            margin: 0 auto;
+            padding: 0;
             color: #000;
         }
 
@@ -21,18 +23,18 @@
         .bold { font-weight: bold; }
         .divider { 
             border-top: 1px dashed #444; 
-            margin: 10px 0; 
+            margin: 6px 0; 
         }
-        .header { font-size: 16px; font-weight: bold; }
+        .header { font-size: 13px; font-weight: bold; }
         table { width: 100%; border-collapse: collapse; }
-        td { padding: 4px 0; vertical-align: top; }
-        .items td { border-bottom: 1px dotted #ccc; padding: 6px 0; }
-        .totals td { padding: 4px 0; font-size: 12px; }
-        .totals .label { text-align: right; width: 70%; }
-        .totals .value { text-align: right; width: 30%; }
-        .footer { margin-top: 15px; font-size: 11px; }
-        img.qr { margin-top: 8px; }
-        .pb { margin-bottom: 12px; }
+        td { padding: 2px 0; vertical-align: top; }
+        .items td { border-bottom: 1px dotted #ccc; padding: 4px 0; }
+        .totals td { padding: 2px 0; font-size: 11px; }
+        .totals .label { text-align: right; width: 60%; }
+        .totals .value { text-align: right; width: 40%; }
+        .footer { margin-top: 8px; font-size: 10px; }
+        img.qr { margin-top: 6px; }
+        .pb { margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -43,7 +45,7 @@
 {% set name = doc.tipoDoc|catalog('01') %}
 
 <div class="center pb">
-    <img src="{{ params.system.logo|image_b64 }}" height="140" width="200">
+    <img src="{{ params.system.logo|image_b64 }}" height="120">
 </div>
 
 <div class="center">
@@ -132,7 +134,7 @@
     {% if params.system.hash is defined and params.system.hash %}
         <div><strong>Hash:</strong> {{ params.system.hash }}</div>
     {% endif %}
-    <img class="qr" src="{{ qrCode(doc)|image_b64('svg+xml') }}" width="140"><br>
+    <img class="qr" src="{{ qrCode(doc)|image_b64('svg+xml') }}" width="110"><br>
     <div>¡Gracias por su compra!</div>
     <div>Representación impresa de la {{ name }} ELECTRÓNICA</div>
 </div>
