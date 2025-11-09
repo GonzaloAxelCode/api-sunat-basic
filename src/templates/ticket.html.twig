@@ -3,136 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+
         body {
             font-family: "Helvetica Neue", Arial, sans-serif;
-            font-size: 11px;
-            width: 78mm;
-            margin: 0 auto;
+            font-size: 12px;
+            margin: 0;
+            width: 100%;
             color: #000;
         }
+
         .center { text-align: center; }
         .right { text-align: right; }
         .bold { font-weight: bold; }
         .divider { 
             border-top: 1px dashed #444; 
-            margin: 6px 0; 
+            margin: 10px 0; 
         }
-        .header { font-size: 13px; font-weight: bold; }
+        .header { font-size: 16px; font-weight: bold; }
         table { width: 100%; border-collapse: collapse; }
-        td { padding: 2px 0; vertical-align: top; }
-        .items td { border-bottom: 1px dotted #ccc; padding: 4px 0; }
-        .totals td { padding: 2px 0; font-size: 11px; }
-        .totals .label { text-align: right; width: 60%; }
-        .totals .value { text-align: right; width: 40%; }
-        .footer { margin-top: 8px; font-size: 10px; }
-        img.qr { margin-top: 6px; }
-        .pb{    margin-bottom: 10px;}
+        td { padding: 4px 0; vertical-align: top; }
+        .items td { border-bottom: 1px dotted #ccc; padding: 6px 0; }
+        .totals td { padding: 4px 0; font-size: 12px; }
+        .totals .label { text-align: right; width: 70%; }
+        .totals .value { text-align: right; width: 30%; }
+        .footer { margin-top: 15px; font-size: 11px; }
+        img.qr { margin-top: 8px; }
+        .pb { margin-bottom: 12px; }
     </style>
 </head>
 <body>
-    {% set cp = doc.company %}
-    {% set cl = doc.client %}
-    {% set moneda = doc.tipoMoneda|catalog('02') %}
-    {% set name = doc.tipoDoc|catalog('01') %}
-<div height="130" align="center" class="p-b">
-                        <span><img src="{{ params.system.logo|image_b64 }}" height="130"  width="160" style="text-align:center" border="0"></span>
-                    </div>
-    <!-- Encabezado Empresa -->
-    <div class="center">
-                <div class="header p-b">{{ cp.nombreComercial }}</div>
-        <div class="header">{{ cp.razonSocial }}</div>
-        <div>RUC: {{ cp.ruc }}</div>
-        <div>{{ cp.address.direccion }}</div>
-        {% if params.user.header is defined %}
-            <div>{{ params.user.header|raw }}</div>
-        {% endif %}
-    </div>
 
-    <div class="divider"></div>
+{% set cp = doc.company %}
+{% set cl = doc.client %}
+{% set moneda = doc.tipoMoneda|catalog('02') %}
+{% set name = doc.tipoDoc|catalog('01') %}
 
-    <!-- Datos Comprobante -->
-    <div class="center">
-        <div class="bold">{{ name }} ELECTRÓNICA</div>
-        <div>{{ doc.serie }} - {{ doc.correlativo }}</div>
-        <div>Fecha: {{ doc.fechaEmision|date('d/m/Y H:i') }}</div>
-    </div>
+<div class="center pb">
+    <img src="{{ params.system.logo|image_b64 }}" height="140" width="200">
+</div>
 
-    <div class="divider"></div>
+<div class="center">
+    <div class="header">{{ cp.nombreComercial }}</div>
+    <div class="header">{{ cp.razonSocial }}</div>
+    <div>RUC: {{ cp.ruc }}</div>
+    <div>{{ cp.address.direccion }}</div>
+    {% if params.user.header is defined %}
+        <div>{{ params.user.header|raw }}</div>
+    {% endif %}
+</div>
 
-    <!-- Cliente -->
-    <div>
-        <div><span class="bold">Cliente:</span> {{ cl.rznSocial }}</div>
-        <div><span class="bold">{{ cl.tipoDoc|catalog('06') }}:</span> {{ cl.numDoc }}</div>
-        {% if cl.address %}
-            <div><span class="bold">Dirección:</span> {{ cl.address.direccion }}</div>
-        {% endif %}
-    </div>
+<div class="divider"></div>
 
-    <div class="divider"></div>
+<div class="center">
+    <div class="bold">{{ name }} ELECTRÓNICA</div>
+    <div>{{ doc.serie }} - {{ doc.correlativo }}</div>
+    <div>Fecha: {{ doc.fechaEmision|date('d/m/Y H:i') }}</div>
+</div>
 
-    <!-- Detalles -->
-    <table class="items">
-        <thead>
-            <tr class="bold">
-                <td>Cant</td>
-                <td>Descripción</td>
-                <td class="right">Total</td>
-            </tr>
-        </thead>
-        <tbody>
-            {% for det in doc.details %}
-            <tr>
-                <td>{{ det.cantidad|n_format }}</td>
-                <td>{{ det.descripcion }}</td>
-                <td class="right">{{ moneda }} {{ det.mtoValorVenta|n_format }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="divider"></div>
 
-    <div class="divider"></div>
+<div>
+    <div><span class="bold">Cliente:</span> {{ cl.rznSocial }}</div>
+    <div><span class="bold">{{ cl.tipoDoc|catalog('06') }}:</span> {{ cl.numDoc }}</div>
+    {% if cl.address %}
+        <div><span class="bold">Dirección:</span> {{ cl.address.direccion }}</div>
+    {% endif %}
+</div>
 
-    <!-- Totales -->
-    <table class="totals">
-        {% if doc.mtoOperGravadas %}
-        <tr>
-            <td class="label">Op. Gravadas:</td>
-            <td class="value">{{ moneda }} {{ doc.mtoOperGravadas|n_format }}</td>
-        </tr>
-        {% endif %}
-        {% if doc.mtoOperExoneradas %}
-        <tr>
-            <td class="label">Op. Exoneradas:</td>
-            <td class="value">{{ moneda }} {{ doc.mtoOperExoneradas|n_format }}</td>
-        </tr>
-        {% endif %}
-        <tr>
-            <td class="label">IGV (18%):</td>
-            <td class="value">{{ moneda }} {{ doc.mtoIGV|n_format }}</td>
-        </tr>
+<div class="divider"></div>
+
+<table class="items">
+    <thead>
         <tr class="bold">
-            <td class="label">Total:</td>
-            <td class="value">{{ moneda }} {{ doc.mtoImpVenta|n_format }}</td>
+            <td>Cant</td>
+            <td>Descripción</td>
+            <td class="right">Total</td>
         </tr>
-    </table>
+    </thead>
+    <tbody>
+        {% for det in doc.details %}
+        <tr>
+            <td>{{ det.cantidad|n_format }}</td>
+            <td>{{ det.descripcion }}</td>
+            <td class="right">{{ moneda }} {{ det.mtoValorVenta|n_format }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
-    <div class="divider"></div>
+<div class="divider"></div>
 
-    <!-- Leyenda -->
-    <div>
-        <span class="bold">Son:</span> {{ legend(doc.legends, '1000') }}
-    </div>
+<table class="totals">
+    {% if doc.mtoOperGravadas %}
+    <tr>
+        <td class="label">Op. Gravadas:</td>
+        <td class="value">{{ moneda }} {{ doc.mtoOperGravadas|n_format }}</td>
+    </tr>
+    {% endif %}
+    {% if doc.mtoOperExoneradas %}
+    <tr>
+        <td class="label">Op. Exoneradas:</td>
+        <td class="value">{{ moneda }} {{ doc.mtoOperExoneradas|n_format }}</td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td class="label">IGV (18%):</td>
+        <td class="value">{{ moneda }} {{ doc.mtoIGV|n_format }}</td>
+    </tr>
+    <tr class="bold">
+        <td class="label">Total:</td>
+        <td class="value">{{ moneda }} {{ doc.mtoImpVenta|n_format }}</td>
+    </tr>
+</table>
 
-    <div class="divider"></div>
+<div class="divider"></div>
 
-    <!-- Footer -->
-    <div class="center footer">
-        {% if params.system.hash is defined and params.system.hash %}
-            <div><strong>Hash:</strong> {{ params.system.hash }}</div>
-        {% endif %}
-        <img class="qr" src="{{ qrCode(doc)|image_b64('svg+xml') }}" width="120"><br>
-        <div>¡Gracias por su compra!</div>
-        <div>Representación impresa de la {{ name }} ELECTRÓNICA</div>
-    </div>
+<div>
+    <span class="bold">Son:</span> {{ legend(doc.legends, '1000') }}
+</div>
+
+<div class="divider"></div>
+
+<div class="center footer">
+    {% if params.system.hash is defined and params.system.hash %}
+        <div><strong>Hash:</strong> {{ params.system.hash }}</div>
+    {% endif %}
+    <img class="qr" src="{{ qrCode(doc)|image_b64('svg+xml') }}" width="140"><br>
+    <div>¡Gracias por su compra!</div>
+    <div>Representación impresa de la {{ name }} ELECTRÓNICA</div>
+</div>
+
 </body>
 </html>
