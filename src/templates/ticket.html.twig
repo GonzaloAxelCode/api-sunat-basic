@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        /* --- CONFIGURACIÓN PARA IMPRESORA TÉRMICA 80mm --- */
+        /* --- CONFIGURACIÓN PARA IMPRESORA TÉRMICA 90mm --- */
         @page {
-            size: 80mm auto;
+            size: 90mm auto;
             margin: 0;
         }
 
         body {
             font-family: "Helvetica Neue", Arial, sans-serif;
-            font-size: 14px; /* tipografía más grande */
-            width: 76mm;  /* más espacio lateral */
-            margin: 0 auto;
-            padding: 0 5px; /* márgenes laterales más visibles */
+            font-size: 14px; /* tipografía mantenida */
+            width: 90mm;  /* ancho total del ticket */
+            margin: 0;
+            padding: 0; /* sin márgenes */
             color: #000;
         }
 
@@ -25,7 +25,7 @@
             border-top: 1px dashed #444; 
             margin: 8px 0; 
         }
-        .header { font-size: 18px; font-weight: bold; } /* encabezados más grandes */
+        .header { font-size: 18px; font-weight: bold; }
         table { width: 100%; border-collapse: collapse; }
         td { padding: 4px 0; vertical-align: top; }
         .items td { border-bottom: 1px dotted #ccc; padding: 5px 0; }
@@ -35,7 +35,7 @@
         .footer { margin-top: 10px; font-size: 13px; }
         img.qr { margin-top: 10px; }
         .pb { margin-bottom: 14px; }
-        img.logo { height: 180px; } /* logo más grande */
+        img.logo { height: 180px; } /* logo mantenido */
     </style>
 </head>
 <body>

@@ -157,7 +157,7 @@ HTML;
             'disable-smart-shrinking', // opcional, evita que wkhtml reduzca el contenido
             'viewport-size' => '800x600',
             'page-width' => '80mm',   // ancho del ticket
-            'page-height' => '200mm', // altura máxima, puede ajustarse dinámicamente
+            'page-height' => '230mm', // altura máxima, puede ajustarse dinámicamente
             'footer-html' => __DIR__ . '/../resources/footer.html',
         ]);
         $binPath = self::getPathBin();
