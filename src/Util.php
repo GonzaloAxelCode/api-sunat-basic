@@ -153,16 +153,15 @@ HTML;
         $render = new PdfReport($html);
         if ($ticketType === 'ticket') {
             // 🟢 SOLO LOS TICKETS USAN 80mm
+
             $render->setOptions([
-                'no-outline',
-                'print-media-type',
-                'viewport-size' => '1280x1024',
                 'page-width' => '80mm',
                 'page-height' => 'auto',
-                'margin-top'    => '0mm',
-                'margin-right'  => '0mm',
-                'margin-bottom' => '0mm',
-                'margin-left'   => '0mm',
+                'margin-top' => '2mm',
+                'margin-bottom' => '2mm',
+                'margin-left' => '1mm',
+                'margin-right' => '1mm',
+                'disable-smart-shrinking',
             ]);
         } else {
             // 🔵 LO DEMÁS SE QUEDA EN A4 NORMAL
