@@ -5,16 +5,16 @@
     <style>
         /* --- CONFIGURACIÓN PARA IMPRESORA TÉRMICA 80mm --- */
         @page {
-            size: 80mm auto;  /* Rollo de impresora térmica */
+            size: 80mm auto;
             margin: 0;
         }
 
         body {
             font-family: "Helvetica Neue", Arial, sans-serif;
-            font-size: 13px; /* letras más grandes */
-            width: 78mm;  /* Ancho del ticket */
+            font-size: 14px; /* tipografía más grande */
+            width: 76mm;  /* más espacio lateral */
             margin: 0 auto;
-            padding: 0;
+            padding: 0 5px; /* márgenes laterales más visibles */
             color: #000;
         }
 
@@ -25,17 +25,17 @@
             border-top: 1px dashed #444; 
             margin: 8px 0; 
         }
-        .header { font-size: 16px; font-weight: bold; } /* encabezado más grande */
+        .header { font-size: 18px; font-weight: bold; } /* encabezados más grandes */
         table { width: 100%; border-collapse: collapse; }
-        td { padding: 3px 0; vertical-align: top; }
+        td { padding: 4px 0; vertical-align: top; }
         .items td { border-bottom: 1px dotted #ccc; padding: 5px 0; }
-        .totals td { padding: 3px 0; font-size: 13px; }
+        .totals td { padding: 4px 0; font-size: 14px; }
         .totals .label { text-align: right; width: 60%; }
         .totals .value { text-align: right; width: 40%; }
-        .footer { margin-top: 10px; font-size: 12px; }
-        img.qr { margin-top: 8px; }
-        .pb { margin-bottom: 12px; }
-        img.logo { height: 160px; } /* logo más grande */
+        .footer { margin-top: 10px; font-size: 13px; }
+        img.qr { margin-top: 10px; }
+        .pb { margin-bottom: 14px; }
+        img.logo { height: 180px; } /* logo más grande */
     </style>
 </head>
 <body>
@@ -52,19 +52,19 @@
 <div class="center">
     <div class="header">{{ cp.nombreComercial }}</div>
     <div class="header">{{ cp.razonSocial }}</div>
-    <div>RUC: {{ cp.ruc }}</div>
-    <div>{{ cp.address.direccion }}</div>
+    <div style="font-size:14px;">RUC: {{ cp.ruc }}</div>
+    <div style="font-size:14px;">{{ cp.address.direccion }}</div>
     {% if params.user.header is defined %}
-        <div>{{ params.user.header|raw }}</div>
+        <div style="font-size:14px;">{{ params.user.header|raw }}</div>
     {% endif %}
 </div>
 
 <div class="divider"></div>
 
 <div class="center">
-    <div class="bold" style="font-size:15px;">{{ name }} ELECTRÓNICA</div>
-    <div style="font-size:14px;">{{ doc.serie }} - {{ doc.correlativo }}</div>
-    <div style="font-size:13px;">Fecha: {{ doc.fechaEmision|date('d/m/Y H:i') }}</div>
+    <div class="bold" style="font-size:16px;">{{ name }} ELECTRÓNICA</div>
+    <div style="font-size:15px;">{{ doc.serie }} - {{ doc.correlativo }}</div>
+    <div style="font-size:14px;">Fecha: {{ doc.fechaEmision|date('d/m/Y H:i') }}</div>
 </div>
 
 <div class="divider"></div>
@@ -81,7 +81,7 @@
 
 <table class="items">
     <thead>
-        <tr class="bold" style="font-size:13px;">
+        <tr class="bold" style="font-size:14px;">
             <td>Cant</td>
             <td>Descripción</td>
             <td class="right">Total</td>
@@ -117,7 +117,7 @@
         <td class="label">IGV (18%):</td>
         <td class="value">{{ moneda }} {{ doc.mtoIGV|n_format }}</td>
     </tr>
-    <tr class="bold" style="font-size:14px;">
+    <tr class="bold" style="font-size:15px;">
         <td class="label">Total:</td>
         <td class="value">{{ moneda }} {{ doc.mtoImpVenta|n_format }}</td>
     </tr>
@@ -126,7 +126,7 @@
 <div class="divider"></div>
 
 <div>
-    <span class="bold">Son:</span> {{ legend(doc.legends, '1000') }}
+    <span class="bold" style="font-size:14px;">Son:</span> {{ legend(doc.legends, '1000') }}
 </div>
 
 <div class="divider"></div>
@@ -135,9 +135,9 @@
     {% if params.system.hash is defined and params.system.hash %}
         <div><strong>Hash:</strong> {{ params.system.hash }}</div>
     {% endif %}
-    <img class="qr" src="{{ qrCode(doc)|image_b64('svg+xml') }}" width="120"><br>
-    <div style="font-size:13px;">¡Gracias por su compra!</div>
-    <div style="font-size:12px;">Representación impresa de la {{ name }} ELECTRÓNICA</div>
+    <img class="qr" src="{{ qrCode(doc)|image_b64('svg+xml') }}" width="130"><br>
+    <div style="font-size:14px;">¡Gracias por su compra!</div>
+    <div style="font-size:13px;">Representación impresa de la {{ name }} ELECTRÓNICA</div>
 </div>
 
 </body>
