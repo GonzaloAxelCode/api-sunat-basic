@@ -151,15 +151,27 @@ HTML;
         $html->setTemplate($template);
 
         $render = new PdfReport($html);
-        $render->setOptions([
-            'no-outline',
-            'print-media-type',
-            'disable-smart-shrinking', // opcional, evita que wkhtml reduzca el contenido
-            'viewport-size' => '800x600',
-            'page-width' => '80mm',   // ancho del ticket
-            'page-height' => '230mm', // altura máxima, puede ajustarse dinámicamente
-            'footer-html' => __DIR__ . '/../resources/footer.html',
-        ]);
+        // Supongamos que $tipoDocumento indica si es 'ticket' o 'a4'
+        if ($ticketType === 'ticket') {
+            $render->setOptions([
+                'no-outline',
+                'print-media-type',
+                'disable-smart-shrinking', // opcional
+                'viewport-size' => '800x600',
+                'page-width' => '80mm',    // ancho del ticket
+                'page-height' => '230mm',  // altura máxima, ajustable
+                'footer-html' => __DIR__ . '/../resources/footer.html',
+            ]);
+        } else {
+            $render->setOptions([
+                'no-outline',
+                'print-media-type',
+                'viewport-size' => '1280x1024',
+                'page-width' => '21cm',
+                'page-height' => '29.7cm',
+                'footer-html' => __DIR__ . '/../resources/footer.html',
+            ]);
+        }
         $binPath = self::getPathBin();
         if (file_exists($binPath)) {
             $render->setBinPath($binPath);
