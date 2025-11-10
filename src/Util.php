@@ -151,32 +151,15 @@ HTML;
         $html->setTemplate($template);
 
         $render = new PdfReport($html);
-        if ($ticketType === 'ticket') {
-            // 🟢 SOLO LOS TICKETS USAN 80mm
-
-            $render->setOptions([
-                'page-width' => '80mm',
-                'page-height' => 'auto',
-                'margin-top' => '2mm',
-                'margin-bottom' => '2mm',
-                'margin-left' => '1mm',
-                'margin-right' => '1mm',
-                'disable-smart-shrinking',
-            ]);
-        } else {
-            // 🔵 LO DEMÁS SE QUEDA EN A4 NORMAL
-            $render->setOptions([
-                'no-outline',
-                'print-media-type',
-                'viewport-size' => '1280x1024',
-                'page-width' => '21cm',
-                'page-height' => '29.7cm',
-                'margin-top'    => '10mm',
-                'margin-right'  => '10mm',
-                'margin-bottom' => '10mm',
-                'margin-left'   => '10mm',
-            ]);
-        }
+        $render->setOptions([
+            'no-outline',
+            'print-media-type',
+            'disable-smart-shrinking', // opcional, evita que wkhtml reduzca el contenido
+            'viewport-size' => '800x600',
+            'page-width' => '80mm',   // ancho del ticket
+            'page-height' => '200mm', // altura máxima, puede ajustarse dinámicamente
+            'footer-html' => __DIR__ . '/../resources/footer.html',
+        ]);
         $binPath = self::getPathBin();
         if (file_exists($binPath)) {
             $render->setBinPath($binPath);
