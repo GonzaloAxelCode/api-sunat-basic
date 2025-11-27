@@ -51,7 +51,7 @@
 
 <div class="center">
     <div class="header">{{ cp.nombreComercial }}</div>
-    <div class="header">{{ cp.razonSocial }}</div>
+    
     <div style="font-size:14px;">RUC: {{ cp.ruc }}</div>
     <div style="font-size:14px;">{{ cp.address.direccion }}</div>
     {% if params.user.header is defined %}
@@ -87,15 +87,17 @@
             <td class="right">Total</td>
         </tr>
     </thead>
-    <tbody>
+ <tbody>
         {% for det in doc.details %}
+        {% set totalConIGV = det.mtoPrecioUnitario * det.cantidad %}
         <tr>
             <td>{{ det.cantidad|n_format }}</td>
             <td>{{ det.descripcion }}</td>
-            <td class="right">{{ moneda }} {{ det.mtoValorVenta|n_format }}</td>
+            
+            <td class="right">{{ moneda }} {{ totalConIGV|n_format }}</td>
         </tr>
         {% endfor %}
-    </tbody>
+    </tbody> 
 </table>
 
 <div class="divider"></div>
