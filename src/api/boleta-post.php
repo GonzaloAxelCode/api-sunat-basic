@@ -117,7 +117,7 @@ $cdrName = "R-{$invoice->getSerie()}-{$invoice->getCorrelativo()}.zip";
 $ticketName = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}-ticket.pdf";
 
 // ✅ Detectar si estamos en BETA y agregar sufijo _beta
-$endpoint = SunatEndpoints::FE_PRODUCCION; // o FE_PROD según tu entorno
+$endpoint = SunatEndpoints::FE_BETA; // o FE_PROD según tu entorno
 $see = $util->getSee($endpoint);
 
 $isBeta = $endpoint === SunatEndpoints::FE_BETA;
