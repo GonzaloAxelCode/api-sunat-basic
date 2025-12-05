@@ -34,8 +34,9 @@
         .totals .value { text-align: right; width: 40%; }
         .footer { margin-top: 10px; font-size: 13px; }
         img.qr { margin-top: 10px; }
-        .pb { margin-bottom: 14px; }
-        img.logo { height: 180px; } /* logo mantenido */
+        .pb { margin-bottom: 5px; }
+        img.logo { height: 90px;  object-fit: contain;
+} /* logo mantenido */
     </style>
 </head>
 <body>
@@ -50,7 +51,7 @@
 </div>
 
 <div class="center">
-    <div class="header">{{ cp.nombreComercial }}</div>
+    <div class="header pb">{{ cp.nombreComercial }}</div>
     
     <div style="font-size:14px;">RUC: {{ cp.ruc }}</div>
     <div style="font-size:14px;">{{ cp.address.direccion }}</div>
