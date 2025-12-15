@@ -70,7 +70,7 @@ foreach ($data['items'] as $item) {
 $invoice->setDetails($items)
     ->setLegends([(new Legend())->setCode('1000')->setValue($data['leyenda'] ?? 'Monto en letras')]);
 
-$see = $util->getSee(SunatEndpoints::FE_BETA);
+$see = $util->getSee(SunatEndpoints::FE_PRODUCCION);
 $res = $see->send($invoice);
 
 if (!$res->isSuccess()) {

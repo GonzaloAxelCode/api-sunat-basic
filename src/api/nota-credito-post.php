@@ -123,7 +123,7 @@ try {
     }
 
     // 📨 Enviar a SUNAT
-    $see = $util->getSee(SunatEndpoints::FE_BETA);
+    $see = $util->getSee(SunatEndpoints::FE_PRODUCCION);
     $res = $see->send($note);
 
     if (!$res->isSuccess()) {
