@@ -170,7 +170,7 @@ try {
     $pdfName = "{$note->getName()}.pdf";
     $cdrName = "R-{$note->getName()}.zip";
 
-    $endpoint = SunatEndpoints::FE_BETA; // o FE_PROD según tu entorno
+    $endpoint = SunatEndpoints::FE_PRODUCCION; // o FE_PROD según tu entorno
     $see = $util->getSee($endpoint);
 
     $isBeta = $endpoint === SunatEndpoints::FE_BETA;
