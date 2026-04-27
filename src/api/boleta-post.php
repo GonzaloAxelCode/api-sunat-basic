@@ -17,6 +17,9 @@ use Greenter\Model\Sale\Legend;
 use Greenter\Ws\Services\SunatEndpoints;
 use Aws\Exception\AwsException;
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 $util = Util::getInstance();
 
 /* ============================
@@ -217,13 +220,11 @@ if (!$ok1 || !$ok2 || !$ok3 || !$ok4) {
 }
 
 if (!$res->isSuccess()) {
-
+    file_put_contents('php://stderr', json_encode($error) . PHP_EOL);
     $error = $util->getErrorResponse($res->getError());
 
-    // 🔥 LOG REAL
-    error_log(json_encode($error));
-
     http_response_code(500);
+
     echo json_encode([
         "success" => false,
         "message" => "Error SUNAT",
