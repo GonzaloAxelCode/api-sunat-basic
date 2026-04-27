@@ -129,7 +129,7 @@ $invoice->setDetails($details)
 /* ============================
    SUNAT PRODUCCIÓN
 ============================ */
-$endpoint = SunatEndpoints::FE_PROD;
+$endpoint = SunatEndpoints::FE_PRODUCCION;
 $see = $util->getSee($endpoint);
 
 $res = $see->send($invoice);
