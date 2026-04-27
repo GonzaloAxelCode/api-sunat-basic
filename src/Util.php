@@ -271,7 +271,7 @@ Consulte la validez de este comprobante en: <a href="https://e-consulta.sunat.go
                 'header' => 'Telf: <b>(+51) 934 545 535</b>',
                 'extras' => [
                     ['name' => 'FORMA DE PAGO', 'value' => 'Contado'],
-                    ['name' => 'VENDEDOR', 'value' => 'SILVAESPINOZAWALTER FREDDY'],
+
                 ],
             ]
         ];
