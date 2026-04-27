@@ -1,21 +1,27 @@
 <?php
 
 declare(strict_types=1);
+
 header("Content-Type: application/json");
+
 require 'domain.php';
-require __DIR__ . '/r2_client.php'; // ✅ Nuevo
+require __DIR__ . '/r2_client.php';
+require __DIR__ . '/../../vendor/autoload.php';
 
 use Greenter\Model\Client\Client;
+use Greenter\Model\Company\Address;
+use Greenter\Model\Company\Company;
 use Greenter\Model\Sale\Invoice;
 use Greenter\Model\Sale\SaleDetail;
 use Greenter\Model\Sale\Legend;
 use Greenter\Ws\Services\SunatEndpoints;
 use Aws\Exception\AwsException;
 
-require __DIR__ . '/../../vendor/autoload.php';
-
 $util = Util::getInstance();
 
+/* ============================
+   INPUT
+============================ */
 $json = file_get_contents("php://input");
 $data = json_decode($json, true);
 
@@ -25,32 +31,80 @@ if (!$data) {
     exit();
 }
 
+/* ============================
+   EMISOR (DINÁMICO)
+============================ */
+$emisor = $data['emisor'] ?? null;
+
+if (!$emisor) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "Falta emisor"]);
+    exit();
+}
+
+$company = (new Company())
+    ->setRuc($emisor['ruc'])
+    ->setRazonSocial($emisor['razonSocial'])
+    ->setNombreComercial($emisor['nombreComercial'] ?? '')
+    ->setAddress(
+        (new Address())
+            ->setUbigueo($emisor['ubigeo'])
+            ->setDepartamento($emisor['departamento'])
+            ->setProvincia($emisor['provincia'])
+            ->setDistrito($emisor['distrito'])
+            ->setDireccion($emisor['direccion'])
+    );
+
+/* ============================
+   CLIENTE
+============================ */
 $clientData = $data['cliente'] ?? [];
+
 $client = (new Client())
     ->setTipoDoc($clientData['tipoDoc'] ?? '1')
     ->setNumDoc($clientData['numDoc'] ?? '00000000')
     ->setRznSocial($clientData['nombre'] ?? 'Cliente Genérico');
 
+/* ============================
+   TIPO DOCUMENTO
+============================ */
+$tipoDoc = $data['tipoDoc'] ?? '03';
+
+$tipoMap = [
+    '01' => 'factura',
+    '03' => 'boleta',
+    '07' => 'nota_credito'
+];
+
+$tipoNombre = $tipoMap[$tipoDoc] ?? 'otros';
+
+/* ============================
+   COMPROBANTE
+============================ */
 $invoice = (new Invoice())
     ->setUblVersion('2.1')
     ->setTipoOperacion('0101')
-    ->setTipoDoc('03')
-    ->setSerie($data['serie'] ?? 'B001')
-    ->setCorrelativo($data['correlativo'] ?? '123')
+    ->setTipoDoc($tipoDoc)
+    ->setSerie($data['serie'])
+    ->setCorrelativo($data['correlativo'])
     ->setFechaEmision(new DateTime())
     ->setTipoMoneda($data['moneda'] ?? 'PEN')
-    ->setCompany($util->getGRECompany())
+    ->setCompany($company)
     ->setClient($client)
-    ->setMtoOperGravadas($data['gravadas'] ?? 200)
-    ->setMtoIGV($data['igv'] ?? 36)
-    ->setTotalImpuestos($data['igv'] ?? 36)
-    ->setValorVenta($data['valorVenta'] ?? 300)
-    ->setSubTotal($data['subTotal'] ?? 336)
-    ->setMtoImpVenta($data['total'] ?? 336);
+    ->setMtoOperGravadas($data['gravadas'])
+    ->setMtoIGV($data['igv'])
+    ->setTotalImpuestos($data['igv'])
+    ->setValorVenta($data['valorVenta'])
+    ->setSubTotal($data['subTotal'])
+    ->setMtoImpVenta($data['total']);
 
-$items = [];
+/* ============================
+   ITEMS
+============================ */
+$details = [];
+
 foreach ($data['items'] as $item) {
-    $detalle = (new SaleDetail())
+    $details[] = (new SaleDetail())
         ->setCodProducto($item['codigo'])
         ->setUnidad($item['unidad'])
         ->setDescripcion($item['descripcion'])
@@ -63,21 +117,28 @@ foreach ($data['items'] as $item) {
         ->setTipAfeIgv($item['tipoAfectacionIgv'])
         ->setTotalImpuestos($item['totalImpuestos'])
         ->setMtoPrecioUnitario($item['precioUnitario']);
-
-    $items[] = $detalle;
 }
 
-$invoice->setDetails($items)
-    ->setLegends([(new Legend())->setCode('1000')->setValue($data['leyenda'] ?? 'Monto en letras')]);
+$invoice->setDetails($details)
+    ->setLegends([
+        (new Legend())
+            ->setCode('1000')
+            ->setValue($data['leyenda'] ?? 'MONTO EN LETRAS')
+    ]);
 
-$see = $util->getSee(SunatEndpoints::FE_PRODUCCION);
+/* ============================
+   SUNAT PRODUCCIÓN
+============================ */
+$endpoint = SunatEndpoints::FE_PRODUCCION;
+$see = $util->getSee($endpoint);
+
 $res = $see->send($invoice);
 
 if (!$res->isSuccess()) {
     http_response_code(500);
     echo json_encode([
         "success" => false,
-        "message" => "Error al enviar la boleta",
+        "message" => "Error SUNAT",
         "error" => $util->getErrorResponse($res->getError())
     ]);
     exit();
@@ -85,61 +146,75 @@ if (!$res->isSuccess()) {
 
 $cdr = $res->getCdrResponse();
 
-// ✅ Crear archivos en memoria
+/* ============================
+   ARCHIVOS EN MEMORIA
+============================ */
 $xmlContent = $see->getFactory()->getLastXml();
 $cdrContent = $res->getCdrZip();
 $pdfContent = $util->getPdf($invoice, "a4");
 $ticketContent = $util->getPdf($invoice, "ticket");
 
-// ✅ Subir directamente a R2
+/* ============================
+   TIENDA (SANITIZADA)
+============================ */
+$tienda = $emisor['nombreComercial'] ?? 'tienda';
+$tienda = preg_replace('/[^a-zA-Z0-9_-]/', '', $tienda);
+
+/* ============================
+   NOMBRES
+============================ */
+$baseName = $invoice->getSerie() . '-' . $invoice->getCorrelativo();
+
+$xmlName = "{$baseName}.xml";
+$pdfName = "{$baseName}.pdf";
+$cdrName = "R-{$baseName}.zip";
+$ticketName = "{$baseName}-ticket.pdf";
+
+/* ============================
+   PATH R2
+============================ */
+$basePath = "{$tienda}/{$tipoNombre}";
+
+/* ============================
+   R2 CLIENT
+============================ */
 $r2 = r2Client();
 
-function subirR2($r2, $bucket, $key, $body, $contentType = 'application/octet-stream')
+/* ============================
+   SUBIDA SEGURA
+============================ */
+function subirR2($r2, $key, $body, $type)
 {
     try {
         $r2->putObject([
-            'Bucket' => $bucket,
+            'Bucket' => R2_BUCKET,
             'Key' => $key,
             'Body' => $body,
-            'ACL' => 'private', // o 'public-read' si deseas acceso directo
-            'ContentType' => $contentType,
+            'ContentType' => $type,
         ]);
         return true;
     } catch (AwsException $e) {
-        error_log('Error R2: ' . $e->getMessage());
+        error_log("R2 ERROR: " . $e->getMessage());
         return false;
     }
 }
-// ✅ Nombres y rutas base
-$xmlName = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.xml";
-$pdfName = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}.pdf";
-$cdrName = "R-{$invoice->getSerie()}-{$invoice->getCorrelativo()}.zip";
-$ticketName = "{$invoice->getSerie()}-{$invoice->getCorrelativo()}-ticket.pdf";
 
-// ✅ Detectar si estamos en BETA y agregar sufijo _beta
-$endpoint = SunatEndpoints::FE_PRODUCCION; // o FE_PROD según tu entorno
-$see = $util->getSee($endpoint);
+/* ============================
+   SUBIR ARCHIVOS
+============================ */
+$ok1 = subirR2($r2, "{$basePath}/xml/{$xmlName}", $xmlContent, 'application/xml');
+$ok2 = subirR2($r2, "{$basePath}/pdf/{$pdfName}", $pdfContent, 'application/pdf');
+$ok3 = subirR2($r2, "{$basePath}/cdr/{$cdrName}", $cdrContent, 'application/zip');
+$ok4 = subirR2($r2, "{$basePath}/ticket/{$ticketName}", $ticketContent, 'application/pdf');
 
-$isBeta = $endpoint === SunatEndpoints::FE_BETA;
-
-if ($isBeta) {
-    $xmlName = str_replace('.xml', '_beta.xml', $xmlName);
-    $pdfName = str_replace('.pdf', '_beta.pdf', $pdfName);
-    $cdrName = str_replace('.zip', '_beta.zip', $cdrName);
-    $ticketName = str_replace('.pdf', '_beta.pdf', $ticketName);
+if (!$ok1 || !$ok2 || !$ok3 || !$ok4) {
+    http_response_code(500);
+    echo json_encode([
+        "success" => false,
+        "message" => "Error subiendo a R2"
+    ]);
+    exit();
 }
-
-// ✅ Subir a R2
-subirR2($r2, R2_BUCKET, "xml/{$xmlName}", $xmlContent, 'application/xml');
-subirR2($r2, R2_BUCKET, "pdf/{$pdfName}", $pdfContent, 'application/pdf');
-subirR2($r2, R2_BUCKET, "cdr/{$cdrName}", $cdrContent, 'application/zip');
-subirR2($r2, R2_BUCKET, "ticket/{$ticketName}", $ticketContent, 'application/pdf');
-
-// ✅ Construir URLs públicas
-$xmlUrl = R2_BASE_URL . "/xml/{$xmlName}";
-$pdfUrl = R2_BASE_URL . "/pdf/{$pdfName}";
-$cdrUrl = R2_BASE_URL . "/cdr/{$cdrName}";
-$ticketUrl = R2_BASE_URL . "/ticket/{$ticketName}";
 
 if (!$res->isSuccess()) {
 
@@ -157,16 +232,21 @@ if (!$res->isSuccess()) {
 
     exit();
 }
-http_response_code(200);
-echo json_encode([
+/* ============================
+   URLS
+============================ */
+$urlBase = R2_BASE_URL . "/{$basePath}";
+
+$response = [
     "success" => true,
-    "message" => "Boleta procesada con éxito y subida a R2",
-    "boleta_id" => $invoice->getSerie() . '-' . $invoice->getCorrelativo(),
+    "message" => "Comprobante enviado a SUNAT y almacenado en R2",
+    "comprobante" => $baseName,
     "cdr_codigo" => $cdr->getCode(),
     "cdr_descripcion" => $cdr->getDescription(),
-    "notas" => $cdr->getNotes(),
-    "xml_url" => $xmlUrl,
-    "pdf_url" => $pdfUrl,
-    "cdr_url" => $cdrUrl,
-    "ticket_url" => $ticketUrl
-], JSON_PRETTY_PRINT);
+    "xml_url" => "{$urlBase}/xml/{$xmlName}",
+    "pdf_url" => "{$urlBase}/pdf/{$pdfName}",
+    "cdr_url" => "{$urlBase}/cdr/{$cdrName}",
+    "ticket_url" => "{$urlBase}/ticket/{$ticketName}"
+];
+
+echo json_encode($response, JSON_PRETTY_PRINT);
