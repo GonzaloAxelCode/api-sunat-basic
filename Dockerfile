@@ -26,17 +26,20 @@ ENV DOCKER=1
 # Copiar SOLO composer files primero (se cachea si no cambian)
 COPY composer.json composer.lock /var/www/html/
 
-# Instalar composer y dependencias (se cachea)
+# Instalar composer y dependencias SIN ejecutar scripts
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     cd /var/www/html && \
     mkdir -p cache files && chmod -R 777 cache files && \
-    composer install --no-interaction --no-dev -o -a --ignore-platform-reqs
+    composer install --no-interaction --no-dev -o -a --ignore-platform-reqs --no-scripts
 
 # Copiar configuracion de opcache
 COPY docker/config/opcache.ini $PHP_INI_DIR/conf.d/
 
-# Copiar el resto del codigo despues
+# Copiar el resto del codigo
 COPY . /var/www/html/
+
+# Ejecutar scripts post-install con el codigo completo
+RUN cd /var/www/html && composer run-script post-install-cmd --no-interaction
 
 WORKDIR /var/www/html
 
