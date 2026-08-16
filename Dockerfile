@@ -38,6 +38,9 @@ COPY docker/config/opcache.ini $PHP_INI_DIR/conf.d/
 # Copiar el resto del codigo
 COPY . /var/www/html/
 
+# Regenerar autoloader con todos los archivos del proyecto
+RUN cd /var/www/html && composer dump-autoload --optimize --no-dev
+
 # Ejecutar scripts post-install con el codigo completo
 RUN cd /var/www/html && composer run-script post-install-cmd --no-interaction
 
