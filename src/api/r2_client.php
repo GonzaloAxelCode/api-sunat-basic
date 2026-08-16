@@ -1,24 +1,25 @@
 <?php
 
 use Aws\S3\S3Client;
+use Dotenv\Dotenv;
 
 require __DIR__ . '/../../vendor/autoload.php';
+
+$dotenv = Dotenv::createImmutable(dirname(__DIR__, 2));
+$dotenv->load();
 
 function r2Client(): S3Client
 {
     return new S3Client([
         'version' => 'latest',
         'region'  => 'auto',
-
-        'endpoint' => 'https://b6a94d41168d5138e642c8ee64103a44.r2.cloudflarestorage.com', // ✅ Tu endpoint R2
+        'endpoint' => $_ENV['R2_ENDPOINT'],
         'credentials' => [
-            'key'    => '958a456a17ce4c33a5a430b3f4789dd7',
-            'secret' => '82c2b02d7244fc847a4cc96339b167ae3e6a6bb2769c3c9491bef807ab92183e',
+            'key'    => $_ENV['R2_KEY'],
+            'secret' => $_ENV['R2_SECRET'],
         ],
     ]);
 }
 
-
-const R2_BUCKET = 'axelmovilcomprobantes';
-
-const R2_BASE_URL = 'https://pub-6b79c76579594222bdd6f486ae49157e.r2.dev';
+$r2_bucket = $_ENV['R2_BUCKET'];
+$r2_base_url = $_ENV['R2_BASE_URL'];

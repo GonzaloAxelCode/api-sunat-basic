@@ -126,7 +126,7 @@ $invoice->setDetails($details)
 /* ============================
    SUNAT PRODUCCIÓN
 ============================ */
-$endpoint = SunatEndpoints::FE_PRODUCCION;
+$endpoint = isLocal() ? SunatEndpoints::FE_BETA : SunatEndpoints::FE_PRODUCCION;
 $see = $util->getSee($endpoint);
 
 $res = $see->send($invoice);
@@ -170,7 +170,8 @@ $ticketName = "{$baseName}-ticket.pdf";
 /* ============================
    PATH R2
 ============================ */
-$basePath = "{$tienda}/factura";
+$prefix = isLocal() ? 'BETA/' : '';
+$basePath = "{$prefix}{$tienda}/factura";
 
 /* ============================
    R2
@@ -181,7 +182,7 @@ function subirR2($r2, $key, $body, $type)
 {
     try {
         $r2->putObject([
-            'Bucket' => R2_BUCKET,
+            'Bucket' => $r2_bucket,
             'Key' => $key,
             'Body' => $body,
             'ContentType' => $type,
@@ -213,7 +214,7 @@ if (!$ok1 || !$ok2 || !$ok3 || !$ok4) {
 /* ============================
    URLS
 ============================ */
-$urlBase = R2_BASE_URL . "/{$basePath}";
+$urlBase = $r2_base_url . "/{$basePath}";
 
 echo json_encode([
     "success" => true,
