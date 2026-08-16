@@ -177,11 +177,11 @@ $basePath = "{$prefix}{$tienda}/nota_credito";
 ============================ */
 $r2 = r2Client();
 
-function subirR2($r2, $key, $body, $type)
+function subirR2($r2, $key, $body, $type, $bucket)
 {
     try {
         $r2->putObject([
-            'Bucket' => $r2_bucket,
+            'Bucket' => $bucket,
             'Key' => $key,
             'Body' => $body,
             'ContentType' => $type,
@@ -196,9 +196,9 @@ function subirR2($r2, $key, $body, $type)
 /* ============================
    SUBIR
 ============================ */
-$ok1 = subirR2($r2, "{$basePath}/xml/{$xmlName}", $xmlContent, 'application/xml');
-$ok2 = subirR2($r2, "{$basePath}/pdf/{$pdfName}", $pdfContent, 'application/pdf');
-$ok3 = subirR2($r2, "{$basePath}/cdr/{$cdrName}", $cdrContent, 'application/zip');
+$ok1 = subirR2($r2, "{$basePath}/xml/{$xmlName}", $xmlContent, 'application/xml', $r2_bucket);
+$ok2 = subirR2($r2, "{$basePath}/pdf/{$pdfName}", $pdfContent, 'application/pdf', $r2_bucket);
+$ok3 = subirR2($r2, "{$basePath}/cdr/{$cdrName}", $cdrContent, 'application/zip', $r2_bucket);
 
 if (!$ok1 || !$ok2 || !$ok3) {
     http_response_code(500);
