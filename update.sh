@@ -13,7 +13,7 @@ fi
 
 echo "🐳 Reconstruyendo Docker..."
 docker compose down
-docker compose build --no-cache
+docker compose build --pull
 docker compose up -d
 
 echo "✅ Logs del contenedor:"

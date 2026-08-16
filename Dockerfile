@@ -23,18 +23,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ENV DOCKER=1
 
-# Copiar archivos de configuración
-COPY docker/config/opcache.ini $PHP_INI_DIR/conf.d/
+# Copiar SOLO composer files primero (se cachea si no cambian)
+COPY composer.json composer.lock /var/www/html/
 
-# Copiar proyecto
-COPY . /var/www/html/
-
-# Instalar composer y dependencias del proyecto
+# Instalar composer y dependencias (se cachea)
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
     cd /var/www/html && \
     mkdir -p cache files && chmod -R 777 cache files && \
     composer install --no-interaction --no-dev -o -a --ignore-platform-reqs
 
+# Copiar configuracion de opcache
+COPY docker/config/opcache.ini $PHP_INI_DIR/conf.d/
+
+# Copiar el resto del codigo despues
+COPY . /var/www/html/
 
 WORKDIR /var/www/html
 
