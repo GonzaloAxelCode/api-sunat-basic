@@ -5,8 +5,11 @@ use Dotenv\Dotenv;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-$dotenv = Dotenv::createImmutable(dirname(__DIR__, 2));
-$dotenv->load();
+$envPath = dirname(__DIR__, 2) . '/.env';
+if (file_exists($envPath)) {
+    $dotenv = Dotenv::createImmutable(dirname(__DIR__, 2));
+    $dotenv->load();
+}
 
 function r2Client(): S3Client
 {
