@@ -6,6 +6,7 @@ header("Content-Type: application/json");
 require 'domain.php';
 require __DIR__ . '/r2_client.php';
 require __DIR__ . '/../../vendor/autoload.php';
+require 'auth.php';
 
 use Greenter\Model\Client\Client;
 use Greenter\Model\Company\Address;
