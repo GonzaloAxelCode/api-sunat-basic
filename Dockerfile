@@ -1,4 +1,3 @@
-
 FROM php:8.2.12-cli-bullseye
 LABEL owner="Giancarlos Salas"
 LABEL maintainer="giansalex@gmail.com"
@@ -7,7 +6,7 @@ LABEL maintainer="giansalex@gmail.com"
 # mirrors deb.debian.org ya no tienen paquetes viejos como
 # libglx-mesa0 (dependencia de chromium). Apuntamos a archive.debian.org
 # ============================================================
-RUN sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list \
+RUN sed -i '/debian-security/d' /etc/apt/sources.list \
     && sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list \
     && sed -i '/bullseye-updates/d' /etc/apt/sources.list \
     && apt-get update -o Acquire::Check-Valid-Until=false
