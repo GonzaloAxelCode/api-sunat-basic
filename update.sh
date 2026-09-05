@@ -9,8 +9,7 @@ set -Eeuo pipefail
 APP_NAME="api-sunat-basic"
 BRANCH="main"
 COMPOSE_FILE="docker-compose.yml"
-
-# Cantidad de logs que se mostrarán al final
+SERVICE_NAME="api"
 LOG_LINES=50
 
 # ============================================================
@@ -48,24 +47,39 @@ error() {
 # ============================================================
 
 cleanup_on_error() {
+    local exit_code=$?
+
+    echo
     error "La actualización falló."
 
     if [ -n "${OLD_COMMIT:-}" ]; then
         echo
-        echo "Commit anterior:"
+        echo "Commit inicial:"
         echo "  $OLD_COMMIT"
     fi
 
+    if [ -n "${NEW_COMMIT:-}" ]; then
+        echo
+        echo "Commit actual:"
+        echo "  $NEW_COMMIT"
+    fi
+
     echo
-    echo "El contenedor anterior no debería haberse detenido"
-    echo "si el fallo ocurrió durante git o build."
+    echo "El contenedor existente no fue detenido manualmente."
+    echo "Si el fallo ocurrió durante Git o Docker build,"
+    echo "el contenedor anterior debería seguir ejecutándose."
+
+    exit "$exit_code"
 }
 
 trap cleanup_on_error ERR
 
 # ============================================================
-# VERIFICAR DIRECTORIO
+# DIRECTORIO DEL PROYECTO
 # ============================================================
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 
 log "Verificando entorno..."
 
@@ -83,15 +97,13 @@ if [ ! -f ".env" ]; then
     warning "Archivo .env no encontrado."
 
     if [ -f ".env.example" ]; then
+        echo
         echo "Se encontró .env.example."
         echo
-        echo "No se creará automáticamente .env para evitar"
-        echo "sobrescribir o generar una configuración incorrecta."
+        echo "Crea el archivo .env antes de continuar:"
         echo
-        echo "Crea .env y vuelve a ejecutar:"
-        echo
-        echo "    cp .env.example .env"
-        echo "    nano .env"
+        echo "  cp .env.example .env"
+        echo "  nano .env"
         echo
     fi
 
@@ -124,14 +136,16 @@ fi
 success "Docker disponible."
 
 # ============================================================
-# VERIFICAR ESTADO GIT
+# VERIFICAR GIT
 # ============================================================
 
 log "Verificando Git..."
 
-if [ "$(git branch --show-current)" != "$BRANCH" ]; then
+CURRENT_BRANCH="$(git branch --show-current)"
+
+if [ "$CURRENT_BRANCH" != "$BRANCH" ]; then
     error "No estás en la rama $BRANCH."
-    echo "Rama actual: $(git branch --show-current)"
+    echo "Rama actual: $CURRENT_BRANCH"
     exit 1
 fi
 
@@ -147,29 +161,28 @@ echo
 # ============================================================
 
 if [ -n "$(git status --porcelain)" ]; then
-    warning "Hay cambios locales."
-
-    git status --short
-
+    warning "Hay cambios locales:"
     echo
+    git status --short
+    echo
+
     error "No se continuará para evitar sobrescribir cambios locales."
     echo
-    echo "Si estás seguro de que esos cambios no deben conservarse,"
-    echo "revísalos y elimínalos manualmente antes de ejecutar este script."
+    echo "Revisa los cambios y vuelve a ejecutar el script."
     exit 1
 fi
 
 success "Working tree limpio."
 
 # ============================================================
-# GIT FETCH
+# OBTENER CAMBIOS DE GITHUB
 # ============================================================
 
 log "Obteniendo cambios desde GitHub..."
 
 git fetch origin "$BRANCH"
 
-REMOTE_COMMIT="$(git rev-parse origin/$BRANCH)"
+REMOTE_COMMIT="$(git rev-parse "origin/$BRANCH")"
 
 echo
 echo "Commit local : $OLD_COMMIT"
@@ -177,11 +190,32 @@ echo "Commit remoto: $REMOTE_COMMIT"
 echo
 
 # ============================================================
-# VERIFICAR SI YA ESTÁ ACTUALIZADO
+# YA ESTÁ ACTUALIZADO
 # ============================================================
 
 if [ "$OLD_COMMIT" = "$REMOTE_COMMIT" ]; then
     success "El servidor ya está actualizado."
+    echo
+    echo "No es necesario reconstruir Docker."
+    echo
+
+    echo "============================================================"
+    echo " ESTADO ACTUAL"
+    echo "============================================================"
+    echo
+
+    docker compose ps
+
+    echo
+    echo "============================================================"
+    echo " ÚLTIMOS LOGS"
+    echo "============================================================"
+    echo
+
+    docker compose logs --tail="$LOG_LINES" "$SERVICE_NAME"
+
+    echo
+    success "No hay cambios nuevos para desplegar."
     exit 0
 fi
 
@@ -191,21 +225,23 @@ fi
 
 if ! git merge-base --is-ancestor "$OLD_COMMIT" "$REMOTE_COMMIT"; then
     error "La actualización no es un fast-forward."
-
     echo
     echo "Tu servidor y origin/$BRANCH tienen historias divergentes."
     echo "No se hará ningún cambio automáticamente."
     echo
-    echo "Revisa con:"
+    echo "Puedes revisar con:"
+    echo
     echo "  git log --oneline --graph --decorate --all -20"
+    echo
 
     exit 1
 fi
 
 # ============================================================
-# ACTUALIZAR GIT
+# ACTUALIZAR CÓDIGO
 # ============================================================
 
+log "Hay cambios nuevos en GitHub."
 log "Actualizando código..."
 
 git merge --ff-only "origin/$BRANCH"
@@ -223,7 +259,7 @@ echo "  $NEW_COMMIT"
 echo
 
 # ============================================================
-# VALIDAR ARCHIVOS IMPORTANTES
+# VALIDAR ARCHIVOS
 # ============================================================
 
 log "Validando archivos del proyecto..."
@@ -245,22 +281,22 @@ done
 success "Archivos requeridos encontrados."
 
 # ============================================================
-# CONSTRUIR IMAGEN NUEVA
+# CONSTRUIR NUEVA IMAGEN
 # ============================================================
 
 log "Construyendo nueva imagen Docker..."
 
-# IMPORTANTE:
-# Todavía NO hacemos docker compose down.
-#
-# Si el build falla, el contenedor actual continúa funcionando.
+echo
+echo "IMPORTANTE:"
+echo "El contenedor actual NO será detenido durante el build."
+echo
 
 docker compose build --pull
 
 success "Nueva imagen construida correctamente."
 
 # ============================================================
-# LEVANTAR / ACTUALIZAR SERVICIO
+# ACTUALIZAR CONTENEDOR
 # ============================================================
 
 log "Actualizando contenedor..."
@@ -275,7 +311,7 @@ success "Contenedor iniciado."
 
 log "Esperando que el contenedor esté listo..."
 
-CONTAINER_ID="$(docker compose ps -q api)"
+CONTAINER_ID="$(docker compose ps -q "$SERVICE_NAME")"
 
 if [ -z "$CONTAINER_ID" ]; then
     error "No se pudo obtener el ID del contenedor."
@@ -287,9 +323,11 @@ ATTEMPT=1
 
 while [ "$ATTEMPT" -le "$MAX_ATTEMPTS" ]; do
 
-    STATUS="$(docker inspect \
-        --format='{{.State.Status}}' \
-        "$CONTAINER_ID" 2>/dev/null || true)"
+    STATUS="$(
+        docker inspect \
+            --format='{{.State.Status}}' \
+            "$CONTAINER_ID" 2>/dev/null || true
+    )"
 
     if [ "$STATUS" = "running" ]; then
         success "Contenedor ejecutándose."
@@ -297,27 +335,44 @@ while [ "$ATTEMPT" -le "$MAX_ATTEMPTS" ]; do
     fi
 
     if [ "$STATUS" = "exited" ] || [ "$STATUS" = "dead" ]; then
+
         error "El contenedor terminó inesperadamente."
 
         echo
         docker compose ps
+
         echo
-        docker compose logs --tail=100 api
+        echo "============================================================"
+        echo " LOGS DEL CONTENEDOR"
+        echo "============================================================"
+        echo
+
+        docker compose logs --tail=100 "$SERVICE_NAME"
 
         exit 1
     fi
 
     echo "Esperando... ($ATTEMPT/$MAX_ATTEMPTS)"
+
     sleep 2
 
     ATTEMPT=$((ATTEMPT + 1))
 done
 
 if [ "$ATTEMPT" -gt "$MAX_ATTEMPTS" ]; then
+
     error "El contenedor no estuvo listo a tiempo."
 
+    echo
     docker compose ps
-    docker compose logs --tail=100 api
+
+    echo
+    echo "============================================================"
+    echo " LOGS DEL CONTENEDOR"
+    echo "============================================================"
+    echo
+
+    docker compose logs --tail=100 "$SERVICE_NAME"
 
     exit 1
 fi
@@ -340,14 +395,15 @@ echo " ÚLTIMOS LOGS"
 echo "============================================================"
 echo
 
-docker compose logs --tail="$LOG_LINES" api
+docker compose logs --tail="$LOG_LINES" "$SERVICE_NAME"
 
 echo
 echo "============================================================"
-
 success "Actualización completada correctamente."
+echo "============================================================"
 
 echo
 echo "Commit desplegado:"
 echo "  $NEW_COMMIT"
+
 echo
