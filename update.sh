@@ -42,65 +42,33 @@ error() {
     echo -e "${RED}❌ $1${NC}"
 }
 
-# ============================================================
-# MANEJO DE ERRORES
-# ============================================================
-
-cleanup_on_error() {
-    local exit_code=$?
-
-    echo
-    error "La actualización falló."
-
-    if [ -n "${OLD_COMMIT:-}" ]; then
-        echo
-        echo "Commit inicial:"
-        echo "  $OLD_COMMIT"
-    fi
-
-    if [ -n "${NEW_COMMIT:-}" ]; then
-        echo
-        echo "Commit actual:"
-        echo "  $NEW_COMMIT"
-    fi
-
-    echo
-    echo "El contenedor existente no fue detenido manualmente."
-    echo "Si el fallo ocurrió durante Git o Docker build,"
-    echo "el contenedor anterior debería seguir ejecutándose."
-
-    exit "$exit_code"
+fail() {
+    error "$1"
+    exit 1
 }
 
-trap cleanup_on_error ERR
-
 # ============================================================
-# DIRECTORIO DEL PROYECTO
+# DIRECTORIO DEL SCRIPT
 # ============================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# ============================================================
+# ENTORNO
+# ============================================================
+
 log "Verificando entorno..."
 
-if [ ! -d ".git" ]; then
-    error "Este directorio no parece ser un repositorio Git."
-    exit 1
-fi
-
-if [ ! -f "$COMPOSE_FILE" ]; then
-    error "No se encontró $COMPOSE_FILE."
-    exit 1
-fi
+[ -d ".git" ] || fail "Este directorio no es un repositorio Git."
+[ -f "$COMPOSE_FILE" ] || fail "No se encontró $COMPOSE_FILE."
 
 if [ ! -f ".env" ]; then
     warning "Archivo .env no encontrado."
 
     if [ -f ".env.example" ]; then
         echo
-        echo "Se encontró .env.example."
-        echo
-        echo "Crea el archivo .env antes de continuar:"
+        echo "Puedes crear .env con:"
         echo
         echo "  cp .env.example .env"
         echo "  nano .env"
@@ -113,30 +81,24 @@ fi
 success "Entorno verificado."
 
 # ============================================================
-# VERIFICAR DOCKER
+# DOCKER
 # ============================================================
 
 log "Verificando Docker..."
 
-if ! command -v docker >/dev/null 2>&1; then
-    error "Docker no está instalado."
-    exit 1
-fi
+command -v docker >/dev/null 2>&1 \
+    || fail "Docker no está instalado."
 
-if ! docker info >/dev/null 2>&1; then
-    error "Docker no está disponible o el usuario no tiene permisos."
-    exit 1
-fi
+docker info >/dev/null 2>&1 \
+    || fail "Docker no está disponible o el usuario no tiene permisos."
 
-if ! docker compose version >/dev/null 2>&1; then
-    error "Docker Compose no está disponible."
-    exit 1
-fi
+docker compose version >/dev/null 2>&1 \
+    || fail "Docker Compose no está disponible."
 
 success "Docker disponible."
 
 # ============================================================
-# VERIFICAR GIT
+# GIT
 # ============================================================
 
 log "Verificando Git..."
@@ -144,9 +106,7 @@ log "Verificando Git..."
 CURRENT_BRANCH="$(git branch --show-current)"
 
 if [ "$CURRENT_BRANCH" != "$BRANCH" ]; then
-    error "No estás en la rama $BRANCH."
-    echo "Rama actual: $CURRENT_BRANCH"
-    exit 1
+    fail "No estás en la rama $BRANCH. Rama actual: $CURRENT_BRANCH"
 fi
 
 OLD_COMMIT="$(git rev-parse HEAD)"
@@ -157,30 +117,31 @@ echo "  $OLD_COMMIT"
 echo
 
 # ============================================================
-# VERIFICAR CAMBIOS LOCALES
+# CAMBIOS LOCALES
 # ============================================================
 
 if [ -n "$(git status --porcelain)" ]; then
+
     warning "Hay cambios locales:"
     echo
-    git status --short
-    echo
 
-    error "No se continuará para evitar sobrescribir cambios locales."
+    git status --short
+
     echo
-    echo "Revisa los cambios y vuelve a ejecutar el script."
-    exit 1
+    fail "No se continuará para evitar sobrescribir cambios locales."
 fi
 
 success "Working tree limpio."
 
 # ============================================================
-# OBTENER CAMBIOS DE GITHUB
+# FETCH
 # ============================================================
 
 log "Obteniendo cambios desde GitHub..."
 
-git fetch origin "$BRANCH"
+if ! git fetch origin "$BRANCH"; then
+    fail "No se pudieron obtener los cambios desde GitHub."
+fi
 
 REMOTE_COMMIT="$(git rev-parse "origin/$BRANCH")"
 
@@ -194,7 +155,9 @@ echo
 # ============================================================
 
 if [ "$OLD_COMMIT" = "$REMOTE_COMMIT" ]; then
+
     success "El servidor ya está actualizado."
+
     echo
     echo "No es necesario reconstruir Docker."
     echo
@@ -204,7 +167,7 @@ if [ "$OLD_COMMIT" = "$REMOTE_COMMIT" ]; then
     echo "============================================================"
     echo
 
-    docker compose ps
+    docker compose ps || true
 
     echo
     echo "============================================================"
@@ -212,7 +175,7 @@ if [ "$OLD_COMMIT" = "$REMOTE_COMMIT" ]; then
     echo "============================================================"
     echo
 
-    docker compose logs --tail="$LOG_LINES" "$SERVICE_NAME"
+    docker compose logs --tail="$LOG_LINES" "$SERVICE_NAME" || true
 
     echo
     success "No hay cambios nuevos para desplegar."
@@ -224,12 +187,14 @@ fi
 # ============================================================
 
 if ! git merge-base --is-ancestor "$OLD_COMMIT" "$REMOTE_COMMIT"; then
+
     error "La actualización no es un fast-forward."
+
     echo
-    echo "Tu servidor y origin/$BRANCH tienen historias divergentes."
-    echo "No se hará ningún cambio automáticamente."
+    echo "Tu servidor y GitHub tienen historias divergentes."
+    echo "No se realizará ningún cambio automáticamente."
     echo
-    echo "Puedes revisar con:"
+    echo "Revisa con:"
     echo
     echo "  git log --oneline --graph --decorate --all -20"
     echo
@@ -244,7 +209,9 @@ fi
 log "Hay cambios nuevos en GitHub."
 log "Actualizando código..."
 
-git merge --ff-only "origin/$BRANCH"
+if ! git merge --ff-only "origin/$BRANCH"; then
+    fail "No se pudo actualizar el código."
+fi
 
 NEW_COMMIT="$(git rev-parse HEAD)"
 
@@ -273,35 +240,41 @@ REQUIRED_FILES=(
 
 for file in "${REQUIRED_FILES[@]}"; do
     if [ ! -f "$file" ]; then
-        error "Falta el archivo requerido: $file"
-        exit 1
+        fail "Falta el archivo requerido: $file"
     fi
 done
 
 success "Archivos requeridos encontrados."
 
 # ============================================================
-# CONSTRUIR NUEVA IMAGEN
+# BUILD
 # ============================================================
 
 log "Construyendo nueva imagen Docker..."
 
 echo
-echo "IMPORTANTE:"
 echo "El contenedor actual NO será detenido durante el build."
 echo
 
-docker compose build --pull
+if ! docker compose build --pull; then
+    error "El Docker build falló."
+    echo
+    echo "El contenedor anterior no fue detenido."
+    echo "El servicio existente debería continuar funcionando."
+    exit 1
+fi
 
 success "Nueva imagen construida correctamente."
 
 # ============================================================
-# ACTUALIZAR CONTENEDOR
+# DEPLOY
 # ============================================================
 
 log "Actualizando contenedor..."
 
-docker compose up -d --remove-orphans
+if ! docker compose up -d --remove-orphans; then
+    fail "No se pudo actualizar el contenedor."
+fi
 
 success "Contenedor iniciado."
 
@@ -315,6 +288,7 @@ CONTAINER_ID="$(docker compose ps -q "$SERVICE_NAME")"
 
 if [ -z "$CONTAINER_ID" ]; then
     error "No se pudo obtener el ID del contenedor."
+    docker compose ps || true
     exit 1
 fi
 
@@ -339,7 +313,7 @@ while [ "$ATTEMPT" -le "$MAX_ATTEMPTS" ]; do
         error "El contenedor terminó inesperadamente."
 
         echo
-        docker compose ps
+        docker compose ps || true
 
         echo
         echo "============================================================"
@@ -347,7 +321,7 @@ while [ "$ATTEMPT" -le "$MAX_ATTEMPTS" ]; do
         echo "============================================================"
         echo
 
-        docker compose logs --tail=100 "$SERVICE_NAME"
+        docker compose logs --tail=100 "$SERVICE_NAME" || true
 
         exit 1
     fi
@@ -355,7 +329,6 @@ while [ "$ATTEMPT" -le "$MAX_ATTEMPTS" ]; do
     echo "Esperando... ($ATTEMPT/$MAX_ATTEMPTS)"
 
     sleep 2
-
     ATTEMPT=$((ATTEMPT + 1))
 done
 
@@ -364,15 +337,10 @@ if [ "$ATTEMPT" -gt "$MAX_ATTEMPTS" ]; then
     error "El contenedor no estuvo listo a tiempo."
 
     echo
-    docker compose ps
+    docker compose ps || true
 
     echo
-    echo "============================================================"
-    echo " LOGS DEL CONTENEDOR"
-    echo "============================================================"
-    echo
-
-    docker compose logs --tail=100 "$SERVICE_NAME"
+    docker compose logs --tail=100 "$SERVICE_NAME" || true
 
     exit 1
 fi
@@ -387,7 +355,7 @@ echo " ESTADO DEL SERVICIO"
 echo "============================================================"
 echo
 
-docker compose ps
+docker compose ps || true
 
 echo
 echo "============================================================"
@@ -395,7 +363,7 @@ echo " ÚLTIMOS LOGS"
 echo "============================================================"
 echo
 
-docker compose logs --tail="$LOG_LINES" "$SERVICE_NAME"
+docker compose logs --tail="$LOG_LINES" "$SERVICE_NAME" || true
 
 echo
 echo "============================================================"
@@ -405,5 +373,4 @@ echo "============================================================"
 echo
 echo "Commit desplegado:"
 echo "  $NEW_COMMIT"
-
 echo
