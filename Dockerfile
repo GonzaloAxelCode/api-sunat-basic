@@ -1,22 +1,11 @@
 FROM php:8.2.12-cli-bullseye
+
 LABEL owner="Giancarlos Salas"
 LABEL maintainer="giansalex@gmail.com"
-# ============================================================
-# Fix: Debian 11 (bullseye) salió de soporte estándar y los
-# mirrors deb.debian.org ya no tienen paquetes viejos como
-# libglx-mesa0 (dependencia de chromium). Apuntamos a archive.debian.org
-# ============================================================
-RUN sed -i '/debian-security/d' /etc/apt/sources.list \
-    && sed -i 's|deb.debian.org/debian|archive.debian.org/debian|g' /etc/apt/sources.list \
-    && sed -i '/bullseye-updates/d' /etc/apt/sources.list \
-    && apt-get update -o Acquire::Check-Valid-Until=false
-# ============================================================
-# Dependencias del sistema
-# ============================================================
-RUN apt-get install -y --no-install-recommends \
-    chromium \
-    ca-certificates \
-    fonts-liberation \
+
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wkhtmltopdf \
     fontconfig \
     libxrender1 \
     libxext6 \
@@ -26,65 +15,56 @@ RUN apt-get install -y --no-install-recommends \
     git \
     unzip \
     curl \
+    gnupg \
+    ca-certificates \
     && docker-php-ext-install soap \
     && docker-php-ext-configure opcache --enable-opcache \
     && docker-php-ext-install opcache \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-# ============================================================
-# Node.js + npm
-# ============================================================
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get update -o Acquire::Check-Valid-Until=false \
-    && apt-get install -y --no-install-recommends nodejs \
-    && npm --version \
-    && node --version \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-# ============================================================
-# Variables
-# ============================================================
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Instalar Node.js 20.x + npm desde NodeSource
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y --no-install-recommends nodejs && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Instalar Chromium (incluye la mayoría de sus dependencias)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    chromium \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Decirle a Puppeteer que use el Chromium del sistema en vez de descargar el suyo
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
 ENV DOCKER=1
-ENV PUPPETEER_SKIP_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-# ============================================================
-# Composer
-# ============================================================
+
+# Copiar SOLO composer files primero (se cachea si no cambian)
 COPY composer.json composer.lock /var/www/html/
-RUN curl -sS https://getcomposer.org/installer | php \
-    -- --install-dir=/usr/local/bin \
-    --filename=composer
-RUN cd /var/www/html \
-    && mkdir -p cache files \
-    && chmod -R 777 cache files \
-    && composer install \
-        --no-interaction \
-        --no-dev \
-        -o \
-        -a \
-        --ignore-platform-reqs \
-        --no-scripts
-# ============================================================
-# PHP configuration
-# ============================================================
+
+# Instalar composer y dependencias SIN ejecutar scripts
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    cd /var/www/html && \
+    mkdir -p cache files && chmod -R 777 cache files && \
+    composer install --no-interaction --no-dev -o -a --ignore-platform-reqs --no-scripts
+
+# Copiar configuracion de opcache
 COPY docker/config/opcache.ini $PHP_INI_DIR/conf.d/
-# ============================================================
-# Código
-# ============================================================
+
+# Copiar package.json de Node ANTES del resto (para cachear npm install)
+COPY package.json package-lock.json* /var/www/html/
+RUN cd /var/www/html && npm install --production
+
+# Copiar el resto del codigo
 COPY . /var/www/html/
-# ============================================================
-# Autoload
-# ============================================================
-RUN cd /var/www/html \
-    && composer dump-autoload --optimize --no-dev
-# ============================================================
-# Post install
-# ============================================================
-RUN cd /var/www/html \
-    && composer run-script post-install-cmd --no-interaction
-# ============================================================
-# Directorio de trabajo
-# ============================================================
+
+# Regenerar autoloader con todos los archivos del proyecto
+RUN cd /var/www/html && composer dump-autoload --optimize --no-dev
+
+# Ejecutar scripts post-install con el codigo completo
+RUN cd /var/www/html && composer run-script post-install-cmd --no-interaction
+
 WORKDIR /var/www/html
+
 EXPOSE 8000
+
 ENTRYPOINT ["php", "-S", "0.0.0.0:8000"]
