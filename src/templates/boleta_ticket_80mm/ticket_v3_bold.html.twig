@@ -1,0 +1,323 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type="text/css">
+        {% include 'assets/style.css' %}
+
+        @page { size: 80mm 210mm; margin: 0; }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            width: 80mm;
+            height: 210mm;
+            overflow-y: hidden; /* solo recorta verticalmente, nunca horizontalmente */
+        }
+
+        body {
+            margin: 0 auto;
+            padding: 3mm 2mm;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 10px;
+            line-height: 1.35;
+            color: #1a1a1a;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* wkhtmltopdf (WebKit antiguo): forzar tabla de ancho fijo en TODAS
+           las tablas de datos evita que una columna se desborde fuera del
+           área imprimible y desaparezca (ese era el bug de los montos). */
+        table { table-layout: fixed; width: 100%; }
+        td { word-wrap: break-word; overflow-wrap: break-word; }
+
+        .center { text-align: center; }
+
+        /* --- Encabezado --- */
+        .header-logo { max-width: 52mm; max-height: 15mm; object-fit: contain; margin-bottom: 3px; }
+        .company-name { font-size: 12px; font-weight: 700; letter-spacing: .2px; color: #1a1a1a !important; }
+        .company-meta { font-size: 9px; color: #444 !important; margin-top: 1px; }
+
+        /* --- Título del documento --- */
+        .doc-block { margin: 10px 0 8px 0; text-align: center; }
+        .doc-title { font-size: 13.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; color: #111 !important; }
+        .doc-subtitle { font-size: 8px; letter-spacing: 1.5px; color: #555 !important; text-transform: uppercase; margin-top: 1px; }
+        .doc-number {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 3px 10px;
+            border: 1.2px solid #111;
+            border-radius: 2px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .5px;
+            color: #111 !important;
+        }
+
+        /* --- Secciones (reemplaza las barras negras sólidas) --- */
+        .section-label {
+            font-size: 8.5px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #111 !important;
+            border-bottom: 1.5px solid #111;
+            padding-bottom: 2px;
+            margin: 11px 0 5px 0;
+        }
+
+        /* --- Separadores --- */
+        .rule { border: none; border-top: 1px dashed #999; margin: 6px 0; }
+        .rule-solid { border: none; border-top: 1px solid #111; margin: 4px 0; }
+
+        /* --- Cliente / metadatos --- */
+        .meta-table { font-size: 9.5px; }
+        .meta-table td { padding: 1.5px 0; vertical-align: top; color: #1a1a1a !important; }
+        .meta-label { color: #555 !important; width: 30mm; padding-right: 4px; }
+        .meta-value { font-weight: 600; }
+        .client-name { font-weight: 700; font-size: 10.5px; margin-bottom: 2px; color: #1a1a1a !important; }
+
+        /* --- Detalle de items --- */
+        .item { padding: 4px 0; }
+        .item + .item { border-top: 1px dotted #ccc; }
+        .item-desc { font-weight: 700; font-size: 10px; color: #111 !important; }
+        .item-row { margin-top: 2px; }
+        .item-sub { font-size: 8.8px; color: #555 !important; }
+        .item-total { width: 24mm; font-size: 10.5px; font-weight: 700; text-align: right; color: #111 !important; }
+
+        /* --- Totales --- */
+        table.totals { margin-top: 2px; }
+        table.totals td { padding: 2px 0; font-size: 10px; }
+        table.totals td.label { width: 48mm; color: #444 !important; }
+        table.totals td.value { text-align: right; font-weight: 600; color: #1a1a1a !important; }
+
+        .grand-total {
+            margin-top: 6px;
+            border-top: 1.5px solid #111;
+            border-bottom: 1.5px solid #111;
+            padding: 5px 0;
+        }
+        .grand-total td { font-size: 13px; font-weight: 800; letter-spacing: .3px; color: #111 !important; }
+        .grand-total .label { text-transform: uppercase; width: 40mm; }
+        .grand-total .value { text-align: right; }
+
+        .sub-total-block { margin-top: 6px; }
+        .pay-total {
+            margin-top: 3px;
+            padding: 4px 0;
+            border-top: 1.5px solid #111;
+        }
+        .pay-total td { font-size: 11.5px; font-weight: 800; color: #111 !important; }
+        .pay-total .label { width: 40mm; }
+        .pay-total .value { text-align: right; }
+
+        /* --- Info adicional --- */
+        .info-block { font-size: 9px; color: #333 !important; }
+        .info-block strong { color: #111 !important; }
+        .info-row { margin-bottom: 2px; }
+
+        /* --- Cuotas / Anticipos --- */
+        .small-table { font-size: 9px; }
+        .small-table td { padding: 2px 0; color: #1a1a1a !important; }
+        .small-table tr + tr { border-top: 1px dotted #ddd; }
+
+        /* --- Pie --- */
+        .footer { text-align: center; font-size: 8px; color: #444 !important; margin-top: 12px; }
+        .footer-legal { font-size: 7.5px; color: #777 !important; margin-top: 4px; letter-spacing: .2px; }
+        .qr-wrap { margin-top: 8px; }
+        .qr-wrap img { width: 30mm; }
+        .hash { font-size: 7px; color: #999 !important; word-break: break-all; margin-top: 4px; }
+
+        /* ============================================================
+           DENSIDAD AUTOMÁTICA
+           Se activa según la cantidad de ítems (ver variable Twig
+           `density` calculada arriba) para garantizar que el ticket
+           entero quepa dentro de los 210mm sin recortarse.
+           normal = boletas cortas (≤13 ítems), luego m / s / xs.
+           ============================================================ */
+
+        body.density-m { font-size: 9px; line-height: 1.25; padding: 2.5mm 2mm; }
+        body.density-m .doc-block { margin: 7px 0 6px 0; }
+        body.density-m .doc-number { padding: 2px 8px; font-size: 11px; }
+        body.density-m .section-label { margin: 8px 0 4px 0; font-size: 8px; }
+        body.density-m .item { padding: 3px 0; }
+        body.density-m .header-logo { max-height: 12mm; }
+        body.density-m .footer { margin-top: 8px; }
+        body.density-m .qr-wrap img { width: 26mm; }
+
+        body.density-s { font-size: 8.3px; line-height: 1.18; padding: 2mm 1.8mm; }
+        body.density-s .doc-block { margin: 5px 0 4px 0; }
+        body.density-s .doc-title { font-size: 12px; }
+        body.density-s .doc-number { padding: 2px 7px; font-size: 10px; margin-top: 3px; }
+        body.density-s .section-label { margin: 6px 0 3px 0; font-size: 7.5px; padding-bottom: 1px; }
+        body.density-s .item { padding: 2px 0; }
+        body.density-s .item-desc { font-size: 8.8px; }
+        body.density-s .item-sub, body.density-s table.totals td { font-size: 7.8px; }
+        body.density-s .header-logo { max-height: 10mm; }
+        body.density-s .company-name { font-size: 10.5px; }
+        body.density-s .grand-total td { font-size: 11px; }
+        body.density-s .footer { margin-top: 6px; font-size: 7px; }
+        body.density-s .qr-wrap img { width: 22mm; }
+
+        body.density-xs { font-size: 7.5px; line-height: 1.1; padding: 1.5mm 1.5mm; }
+        body.density-xs .doc-block { margin: 4px 0 3px 0; }
+        body.density-xs .doc-title { font-size: 11px; }
+        body.density-xs .doc-subtitle { display: none; }
+        body.density-xs .doc-number { padding: 1px 6px; font-size: 9px; margin-top: 2px; }
+        body.density-xs .section-label { margin: 4px 0 2px 0; font-size: 7px; letter-spacing: .6px; padding-bottom: 1px; }
+        body.density-xs .item { padding: 1.5px 0; }
+        body.density-xs .item-desc { font-size: 8px; }
+        body.density-xs .item-sub, body.density-xs table.totals td { font-size: 7px; }
+        body.density-xs .header-logo { max-height: 8mm; }
+        body.density-xs .company-name { font-size: 9.5px; }
+        body.density-xs .company-meta { font-size: 7.5px; }
+        body.density-xs .grand-total td { font-size: 10px; }
+        body.density-xs .footer { margin-top: 4px; font-size: 6.5px; }
+        body.density-xs .footer-legal { font-size: 6.5px; }
+        body.density-xs .qr-wrap img { width: 18mm; }
+    </style>
+</head>
+<body class="white-bg density-{{ density }}">
+{% set cp = doc.company %}
+{% set isInvoice = doc.tipoDoc in ['01', '03'] %}
+{% set isNota = doc.tipoDoc in ['07', '08'] %}
+{% set isAnticipo = doc.totalAnticipos is defined and doc.totalAnticipos > 0 %}
+{% set name = doc.tipoDoc|catalog('01') %}
+{# --- Densidad automática: escala tipografía/espaciado según cantidad de ítems para que todo entre en 210mm --- #}
+{% set itemCount = doc.details|length %}
+{% set density = itemCount > 26 ? 'xs' : (itemCount > 19 ? 's' : (itemCount > 13 ? 'm' : 'normal')) %}
+
+<!-- ================= ENCABEZADO ================= -->
+<div class="center">
+    <img src="{{ params.system.logo_url ?: (params.system.logo|image_b64) }}" class="header-logo" border="0"><br>
+    <div class="company-name">{{ cp.nombreComercial }}</div>
+    <div class="company-meta">RUC {{ cp.ruc }} &middot; {{ cp.address.direccion }}</div>
+    <div class="company-meta">{{ params.user.header|raw }}</div>
+</div>
+
+<!-- ================= TÍTULO DOC ================= -->
+<div class="doc-block">
+    <div class="doc-title">{{ name }}</div>
+    <div class="doc-subtitle">Representación Electrónica</div>
+    <div class="doc-number">{{ doc.serie }}-{{ doc.correlativo }}</div>
+</div>
+
+<hr class="rule-solid">
+
+<!-- ================= CLIENTE ================= -->
+<div class="section-label">Datos del Cliente</div>
+<div class="client-name">{{ cl.rznSocial }}</div>
+{% set cl = doc.client %}
+<table class="meta-table">
+    <tr><td class="meta-label">{{ cl.tipoDoc|catalog('06') }}</td><td class="meta-value">{{ cl.numDoc }}</td></tr>
+    {% if cl.address %}<tr><td class="meta-label">Dirección</td><td class="meta-value">{{ cl.address.direccion }}</td></tr>{% endif %}
+    <tr><td class="meta-label">Emisión</td><td class="meta-value">{{ doc.fechaEmision|date('d/m/Y') }} {% if doc.fechaEmision|date('H:i:s') != '00:00:00' %}{{ doc.fechaEmision|date('H:i:s') }}{% endif %}</td></tr>
+    {% if doc.fecVencimiento is defined and doc.fecVencimiento %}<tr><td class="meta-label">Vencimiento</td><td class="meta-value">{{ doc.fecVencimiento|date('d/m/Y') }}</td></tr>{% endif %}
+    {% if isNota %}<tr><td class="meta-label">Doc. Ref.</td><td class="meta-value">{{ doc.tipDocAfectado|catalog('01') }} {{ doc.numDocfectado }}</td></tr>{% endif %}
+    <tr><td class="meta-label">Moneda</td><td class="meta-value">{{ doc.tipoMoneda|catalog('021') }}</td></tr>
+    {% if doc.compra is defined and doc.compra %}<tr><td class="meta-label">O/C</td><td class="meta-value">{{ doc.compra }}</td></tr>{% endif %}
+    {% if doc.guias %}<tr><td class="meta-label">Guías</td><td class="meta-value">{% for guia in doc.guias %}{{ guia.nroDoc }} {% endfor %}</td></tr>{% endif %}
+</table>
+
+<!-- ================= DETALLE ================= -->
+<div class="section-label">Detalle</div>
+{% set moneda = doc.tipoMoneda|catalog('02') %}
+{% for det in doc.details %}
+<div class="item">
+    <div class="item-desc">{{ det.descripcion }}</div>
+    <table class="item-row"><tbody><tr>
+        <td class="item-sub">{{ det.cantidad|n_format }} {{ det.unidad }} x {{ moneda }} {{ det.mtoValorUnitario|n_format }}{% if det.codProducto %} &middot; {{ det.codProducto }}{% endif %}</td>
+        <td class="item-total">{{ moneda }} {{ det.mtoValorVenta|n_format }}</td>
+    </tr></tbody></table>
+</div>
+{% endfor %}
+
+<!-- ================= TOTALES ================= -->
+<div class="section-label">Totales</div>
+<table class="totals">
+    <tbody>
+        {% if isAnticipo %}<tr><td class="label">Total Anticipo</td><td class="value">{{ moneda }} {{ doc.totalAnticipos|n_format }}</td></tr>{% endif %}
+        {% if doc.mtoOperGravadas %}<tr><td class="label">Op. Gravadas</td><td class="value">{{ moneda }} {{ doc.mtoOperGravadas|n_format }}</td></tr>{% endif %}
+        {% if doc.mtoOperInafectas %}<tr><td class="label">Op. Inafectas</td><td class="value">{{ moneda }} {{ doc.mtoOperInafectas|n_format }}</td></tr>{% endif %}
+        {% if doc.mtoOperExoneradas %}<tr><td class="label">Op. Exoneradas</td><td class="value">{{ moneda }} {{ doc.mtoOperExoneradas|n_format }}</td></tr>{% endif %}
+        {% if doc.mtoOperGratuitas %}<tr><td class="label">Op. Gratuitas</td><td class="value">{{ moneda }} {{ doc.mtoOperGratuitas|n_format }}</td></tr>{% endif %}
+        {% if doc.mtoOperExportacion %}<tr><td class="label">Op. Exportación</td><td class="value">{{ moneda }} {{ doc.mtoOperExportacion|n_format }}</td></tr>{% endif %}
+        {% if doc.mtoBaseIvap %}<tr><td class="label">Base IVAP</td><td class="value">{{ moneda }} {{ doc.mtoBaseIvap|n_format }}</td></tr>{% endif %}
+        {% if doc.mtoIGVGratuitas %}<tr><td class="label">IGV Gratuito</td><td class="value">{{ moneda }} {{ doc.mtoIGVGratuitas|n_format }}</td></tr>{% endif %}
+        <tr><td class="label">I.G.V.{% if params.user.numIGV is defined %} {{ params.user.numIGV }}%{% endif %}</td><td class="value">{{ moneda }} {{ doc.mtoIGV|n_format }}</td></tr>
+        {% if doc.mtoIvap %}<tr><td class="label">IVAP</td><td class="value">{{ moneda }} {{ doc.mtoIvap|n_format }}</td></tr>{% endif %}
+        {% if doc.icbper %}<tr><td class="label">I.C.B.P.E.R.</td><td class="value">{{ moneda }} {{ doc.icbper|n_format }}</td></tr>{% endif %}
+        {% if doc.mtoISC %}<tr><td class="label">I.S.C.</td><td class="value">{{ moneda }} {{ doc.mtoISC|n_format }}</td></tr>{% endif %}
+        {% if doc.sumOtrosCargos %}<tr><td class="label">Otros Cargos</td><td class="value">{{ moneda }} {{ doc.sumOtrosCargos|n_format }}</td></tr>{% endif %}
+        {% if doc.mtoOtrosTributos %}<tr><td class="label">Otros Tributos</td><td class="value">{{ moneda }} {{ doc.mtoOtrosTributos|n_format }}</td></tr>{% endif %}
+        {% if doc.redondeo %}<tr><td class="label">Redondeo</td><td class="value">{{ moneda }} {{ doc.redondeo|n_format }}</td></tr>{% endif %}
+    </tbody>
+</table>
+
+<table class="grand-total"><tbody>
+    <tr><td class="label">Total</td><td class="value"><span id="ride-importeTotal">{{ moneda }} {{ doc.mtoImpVenta|n_format }}</span></td></tr>
+</tbody></table>
+
+{% if doc.perception and doc.perception.mto %}
+    {% set perc = doc.perception %}
+    {% set soles = 'PEN'|catalog('02') %}
+    <div class="sub-total-block">
+        <table class="totals"><tbody>
+            <tr><td class="label">Percepción</td><td class="value">{{ soles }} {{ perc.mto|n_format }}</td></tr>
+        </tbody></table>
+        <table class="pay-total"><tbody>
+            <tr><td class="label">A Pagar</td><td class="value">{{ soles }} {{ perc.mtoTotal|n_format }}</td></tr>
+        </tbody></table>
+    </div>
+{% endif %}
+
+{% if isInvoice and doc.detraccion %}
+<table class="totals" style="margin-top:4px;"><tbody>
+    <tr><td class="label">Detracción ({{ doc.detraccion.percent }}%)</td><td class="value">{{ moneda }} {{ doc.detraccion.mount|n_format }}</td></tr>
+</tbody></table>
+{% endif %}
+
+<!-- ================= INFO ADICIONAL ================= -->
+<div class="section-label">Información Adicional</div>
+<div class="info-block">
+    <div class="info-row"><strong>Son:</strong> {{ legend(doc.legends, '1000') }}</div>
+    {% if isInvoice and doc.detraccion %}
+    <div class="info-row"><strong>Tipo Detracción:</strong> {{ doc.detraccion.codBienDetraccion }} - {{ doc.detraccion.codBienDetraccion|catalog('54') }}</div>
+    <div class="info-row"><strong>Medio de Pago:</strong> {{ doc.detraccion.codMedioPago }} - {{ doc.detraccion.codMedioPago|catalog('59') }}</div>
+    <div class="info-row"><strong>N° Cta. Banco Nac.:</strong> {{ doc.detraccion.ctaBanco }}</div>
+    {% endif %}
+    {% if isNota %}<div class="info-row"><strong>Motivo de Emisión:</strong> {{ doc.desMotivo }}</div>{% endif %}
+    {% if params.user.extras is defined %}
+        {% for item in params.user.extras %}<div class="info-row"><strong>{{ item.name|upper }}:</strong> {{ item.value }}</div>{% endfor %}
+    {% endif %}
+</div>
+
+{% if isAnticipo %}
+<div class="section-label">Anticipo</div>
+<table class="small-table"><tbody>
+    {% for atp in doc.anticipos %}
+    <tr><td>{{ atp.nroDocRel }}</td><td align="right">{{ moneda }} {{ atp.total|n_format }}</td></tr>
+    {% endfor %}
+</tbody></table>
+{% endif %}
+
+{% if doc.cuotas %}
+<div class="section-label">Cuotas</div>
+<table class="small-table"><tbody>
+    {% for cuota in doc.cuotas %}
+    <tr><td>{{ moneda }} {{ cuota.monto|n_format }}</td><td align="right">{{ cuota.fechaPago|date('d/m/Y') }}</td></tr>
+    {% endfor %}
+</tbody></table>
+{% endif %}
+
+<!-- ================= PIE ================= -->
+<div class="footer">
+    {% if params.user.footer is defined %}<div>{{ params.user.footer|raw }}</div>{% endif %}
+    <div class="footer-legal">Representación impresa de la {{ name }} electrónica.</div>
+    {% if params.system.hash is defined and params.system.hash %}<div class="hash">Resumen: {{ params.system.hash }}</div>{% endif %}
+    <div class="qr-wrap">
+        <img src="{{ qrCode(doc)|image_b64('svg+xml') }}" alt="Qr Image">
+    </div>
+</div>
+
+</body>
+</html>

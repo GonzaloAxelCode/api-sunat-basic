@@ -35,6 +35,10 @@ if (!$data) {
     exit();
 }
 
+$logoUrl = isset($data['logo_url']) ? (string) $data['logo_url'] : null;
+
+error_log("[BOULETA] JSON keys=" . implode(',', array_keys($data)) . " tipo_style_boleta_ticket=" . ($data['tipo_style_boleta_ticket'] ?? 'NOT_SET') . " tipo_style_boleta_pdf=" . ($data['tipo_style_boleta_pdf'] ?? 'NOT_SET') . " logo_url=" . ($logoUrl ?? 'null'));
+
 /* ============================
    EMISOR (DINÁMICO)
 ============================ */
@@ -81,6 +85,9 @@ $tipoMap = [
 ];
 
 $tipoNombre = $tipoMap[$tipoDoc] ?? 'otros';
+
+$tipoStyleBoletaTicket = $data['tipo_style_boleta_ticket'] ?? null;
+$tipoStyleBoletaPdf = $data['tipo_style_boleta_pdf'] ?? null;
 
 /* ============================
    COMPROBANTE
@@ -134,7 +141,14 @@ $invoice->setDetails($details)
    SUNAT PRODUCCIÓN
 ============================ */
 $endpoint = isLocal() ? SunatEndpoints::FE_BETA : SunatEndpoints::FE_PRODUCCION;
-$see = $util->getSee($endpoint);
+
+try {
+    $see = $util->buildSeeFromEmisor($endpoint, $emisor);
+} catch (\InvalidArgumentException $e) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => $e->getMessage()]);
+    exit();
+}
 
 $res = $see->send($invoice);
 
@@ -155,8 +169,8 @@ $cdr = $res->getCdrResponse();
 ============================ */
 $xmlContent = $see->getFactory()->getLastXml();
 $cdrContent = $res->getCdrZip();
-$pdfContent = $util->getPdf($invoice, "a4");
-$ticketContent = $util->getPdf($invoice, "ticket");
+$pdfContent = $util->getPdf($invoice, "a4", $see, null, null, $tipoStyleBoletaPdf, $logoUrl);
+$ticketContent = $util->getPdf($invoice, "ticket", $see, $tipoStyleBoletaTicket, null, null, $logoUrl);
 
 /* ============================
    TIENDA (SANITIZADA)

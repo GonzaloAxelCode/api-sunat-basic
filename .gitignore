@@ -4,3 +4,8 @@
 /cache/
 .vercel
 .env
+.kilo
+/.kilo
+
+/src/templates/cache/
+/node_modules/

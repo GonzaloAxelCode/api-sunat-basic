@@ -31,8 +31,10 @@ if (!$data) {
     exit();
 }
 
+$logoUrl = isset($data['logo_url']) ? (string) $data['logo_url'] : null;
+
 /* ============================
-   EMISOR (DINÁMICO)
+    EMISOR (DINÁMICO)
 ============================ */
 $emisor = $data['emisor'] ?? null;
 
@@ -130,7 +132,14 @@ $note->setDetails($details)
    SUNAT PRODUCCIÓN
 ============================ */
 $endpoint = isLocal() ? SunatEndpoints::FE_BETA : SunatEndpoints::FE_PRODUCCION;
-$see = $util->getSee($endpoint);
+
+try {
+    $see = $util->buildSeeFromEmisor($endpoint, $emisor);
+} catch (\InvalidArgumentException $e) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => $e->getMessage()]);
+    exit();
+}
 
 $res = $see->send($note);
 
@@ -151,7 +160,7 @@ $cdr = $res->getCdrResponse();
 ============================ */
 $xmlContent = $see->getFactory()->getLastXml();
 $cdrContent = $res->getCdrZip();
-$pdfContent = $util->getPdf($note, "note");
+$pdfContent = $util->getPdf($note, "note", $see, null, null, null, $logoUrl);
 
 /* ============================
    TIENDA

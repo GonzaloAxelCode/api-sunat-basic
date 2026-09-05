@@ -6,8 +6,10 @@ LABEL maintainer="giansalex@gmail.com"
 
 # Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    wkhtmltopdf \
     fontconfig \
+    chromium \
+    nodejs \
+    npm \
     libxrender1 \
     libxext6 \
     libjpeg62-turbo \

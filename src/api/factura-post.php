@@ -20,6 +20,7 @@ use Greenter\Ws\Services\SunatEndpoints;
 use Aws\Exception\AwsException;
 
 ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 $util = Util::getInstance();
@@ -35,6 +36,10 @@ if (!$data) {
     echo json_encode(["success" => false, "message" => "JSON inválido"]);
     exit();
 }
+
+$logoUrl = isset($data['logo_url']) ? (string) $data['logo_url'] : null;
+
+error_log("[FACTURA] JSON keys=" . implode(',', array_keys($data)) . " tipo_style_factura_pdf=" . ($data['tipo_style_factura_pdf'] ?? 'NOT_SET') . " logo_url=" . ($logoUrl ?? 'null'));
 
 /* ============================
    EMISOR (DINÁMICO)
@@ -96,6 +101,8 @@ $invoice = (new Invoice())
     ->setSubTotal($data['subTotal'])
     ->setMtoImpVenta($data['total']);
 
+$tipoStyleFacturaPdf = $data['tipo_style_factura_pdf'] ?? null;
+
 /* ============================
    ITEMS
 ============================ */
@@ -128,7 +135,14 @@ $invoice->setDetails($details)
    SUNAT PRODUCCIÓN
 ============================ */
 $endpoint = isLocal() ? SunatEndpoints::FE_BETA : SunatEndpoints::FE_PRODUCCION;
-$see = $util->getSee($endpoint);
+
+try {
+    $see = $util->buildSeeFromEmisor($endpoint, $emisor);
+} catch (\InvalidArgumentException $e) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => $e->getMessage()]);
+    exit();
+}
 
 $res = $see->send($invoice);
 
@@ -149,8 +163,8 @@ $cdr = $res->getCdrResponse();
 ============================ */
 $xmlContent = $see->getFactory()->getLastXml();
 $cdrContent = $res->getCdrZip();
-$pdfContent = $util->getPdf($invoice, "a4");
-$ticketContent = $util->getPdf($invoice, "ticket");
+$pdfContent = $util->getPdf($invoice, "a4", $see, null, $tipoStyleFacturaPdf, null, $logoUrl);
+$ticketContent = $util->getPdf($invoice, "ticket", $see, null, null, null, $logoUrl);
 
 /* ============================
    TIENDA
