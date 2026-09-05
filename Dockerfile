@@ -1,4 +1,4 @@
-cat > Dockerfile << 'EOF'
+
 FROM php:8.2.12-cli-bullseye
 LABEL owner="Giancarlos Salas"
 LABEL maintainer="giansalex@gmail.com"
@@ -89,4 +89,3 @@ RUN cd /var/www/html \
 WORKDIR /var/www/html
 EXPOSE 8000
 ENTRYPOINT ["php", "-S", "0.0.0.0:8000"]
-EOF
