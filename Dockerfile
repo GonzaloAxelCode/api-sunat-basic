@@ -1,15 +1,17 @@
-
 FROM php:8.2.12-cli-bullseye
 
 LABEL owner="Giancarlos Salas"
 LABEL maintainer="giansalex@gmail.com"
 
-# Instalar dependencias del sistema
+# ============================================================
+# Dependencias del sistema
+# ============================================================
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    fontconfig \
     chromium \
-    nodejs \
-    npm \
+    ca-certificates \
+    fonts-liberation \
+    fontconfig \
     libxrender1 \
     libxext6 \
     libjpeg62-turbo \
@@ -21,30 +23,79 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && docker-php-ext-install soap \
     && docker-php-ext-configure opcache --enable-opcache \
     && docker-php-ext-install opcache \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# ============================================================
+# Node.js + npm
+# ============================================================
+
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends nodejs \
+    && npm --version \
+    && node --version \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# ============================================================
+# Variables
+# ============================================================
 
 ENV DOCKER=1
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Copiar SOLO composer files primero (se cachea si no cambian)
+# ============================================================
+# Composer
+# ============================================================
+
 COPY composer.json composer.lock /var/www/html/
 
-# Instalar composer y dependencias SIN ejecutar scripts
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-    cd /var/www/html && \
-    mkdir -p cache files && chmod -R 777 cache files && \
-    composer install --no-interaction --no-dev -o -a --ignore-platform-reqs --no-scripts
+RUN curl -sS https://getcomposer.org/installer | php \
+    -- --install-dir=/usr/local/bin \
+    --filename=composer
 
-# Copiar configuracion de opcache
+RUN cd /var/www/html \
+    && mkdir -p cache files \
+    && chmod -R 777 cache files \
+    && composer install \
+        --no-interaction \
+        --no-dev \
+        -o \
+        -a \
+        --ignore-platform-reqs \
+        --no-scripts
+
+# ============================================================
+# PHP configuration
+# ============================================================
+
 COPY docker/config/opcache.ini $PHP_INI_DIR/conf.d/
 
-# Copiar el resto del codigo
+# ============================================================
+# Código
+# ============================================================
+
 COPY . /var/www/html/
 
-# Regenerar autoloader con todos los archivos del proyecto
-RUN cd /var/www/html && composer dump-autoload --optimize --no-dev
+# ============================================================
+# Autoload
+# ============================================================
 
-# Ejecutar scripts post-install con el codigo completo
-RUN cd /var/www/html && composer run-script post-install-cmd --no-interaction
+RUN cd /var/www/html \
+    && composer dump-autoload --optimize --no-dev
+
+# ============================================================
+# Post install
+# ============================================================
+
+RUN cd /var/www/html \
+    && composer run-script post-install-cmd --no-interaction
+
+# ============================================================
+# Directorio de trabajo
+# ============================================================
 
 WORKDIR /var/www/html
 
