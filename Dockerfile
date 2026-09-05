@@ -65,6 +65,7 @@ RUN cd /var/www/html && composer run-script post-install-cmd --no-interaction
 
 WORKDIR /var/www/html
 
-EXPOSE 8000
+EXPOSE 8000 
+
 
 ENTRYPOINT ["php", "-S", "0.0.0.0:8000"]
