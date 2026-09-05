@@ -34,7 +34,6 @@ class PdfReportBrowsershot implements ReportInterface
         }
 
         $browsershot = Browsershot::html($this->html)
-            ->setChromePath('/usr/bin/chromium')
             ->noSandbox()
             ->showBackground();
 
